@@ -31,13 +31,21 @@ pushd /home/pi
 	pushd OctoPrint-gcodeRender
 		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 	popd
+
+	echo "--- Installing OctoPrint-NetworkManager"
+
+	gitclone OCTOPI_OCTOPRINT_NENTWORKMANAGER_REPO OctoPrint-NetworkManager
+	pushd OctoPrint-NetworkManager
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
+	popd
 popd
 
 echo "--- Installing aasoftpoweroff"
-pip install raspberry-gpio-python
+chmod +x /etc/init.d/aasoftpoweroff
 update-rc.d aasoftpoweroff defaults 
 
 echo "--- Installing cleanupmounts"
+chmod +x /etc/init.d/cleanupmounts
 update-rc.d cleanupmounts defaults
 
 
