@@ -15,21 +15,21 @@ pushd /home/pi
 
 	gitclone OCTOPI_OCTOPRINT_LUI_REPO OctoPrint-LUI
 	pushd OctoPrint-LUI
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/OctoPrint/venv/bin/python setup.py install
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 	popd
 
 	echo "--- Installing OctoPrint-flashArduino"
 
 	gitclone OCTOPI_OCTOPRINT_FLASHARDUINO_REPO OctoPrint-flashArduino
 	pushd OctoPrint-flashArduino
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/OctoPrint/venv/bin/python setup.py install
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 	popd
 
 	echo "--- Installing OctoPrint-gcodeRender"
 
 	gitclone OCTOPI_OCTOPRINT_GCODERENDER_REPO OctoPrint-gcodeRender
 	pushd OctoPrint-gcodeRender
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/OctoPrint/venv/bin/python setup.py install
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 	popd
 popd
 
