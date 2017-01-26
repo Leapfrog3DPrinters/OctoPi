@@ -61,6 +61,11 @@ apt-get install --reinstall iputils-ping
 
 
 pushd /home/pi
+  if [ "$OCTOPI_INCLUDE_OCTOPRINT" == "yes" ]
+  then
+    echo "--- Cloning OctoPrint"
+    gitclone OCTOPI_OCTOPRINT_REPO OctoPrint
+  fi
 
   #build virtualenv
   sudo -u pi virtualenv $OCTOPI_OCTOPRINT_VENV_PATH
@@ -98,8 +103,7 @@ pushd /home/pi
     #pybonjour (for mdns discovery)
     sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/pip install https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.tar.gz
 
-    #OctoPrint
-    gitclone OCTOPI_OCTOPRINT_REPO OctoPrint
+    
     pushd OctoPrint
       PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
     popd
