@@ -34,7 +34,7 @@ pushd /home/pi
 
 	echo "--- Installing OctoPrint-NetworkManager"
 
-	gitclone OCTOPI_OCTOPRINT_NENTWORKMANAGER_REPO OctoPrint-NetworkManager
+	gitclone OCTOPI_OCTOPRINT_NETWORKMANAGER_REPO OctoPrint-NetworkManager
 	pushd OctoPrint-NetworkManager
 		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 	popd
