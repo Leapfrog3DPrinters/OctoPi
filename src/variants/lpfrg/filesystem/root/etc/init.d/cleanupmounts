@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FILES=/media/pi/*/
+for f in $FILES;
+do
+    if [ "$f" != "$FILES" ]; then
+        echo "Removing unused mountpoint $f"
+        mountpoint -q "$f" || rm -d -f "$f"
+    fi
+done
+
+exit 0

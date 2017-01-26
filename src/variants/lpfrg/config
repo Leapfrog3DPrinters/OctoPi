@@ -1,0 +1,11 @@
+VARIANT_CONFIG_DIR=$(realpath -s $(dirname $(realpath -s $BASH_SOURCE))/../..)
+
+OCTOPI_OVERRIDE_HOSTNAME=lpfrgPi
+OCTOPI_INCLUDE_OCTOPIPANEL=no
+OCTOPI_INCLUDE_WIRINGPI=no
+OCTOPI_INCLUDE_CURAENGINE=no
+
+# Custom config
+OCTOPI_OCTOPRINT_LUI_REPO = https://github.com/Leapfrog3DPrinters/OctoPrint-LUI.git
+OCTOPI_OCTOPRINT_FLASHARDUINO_REPO = https://github.com/Leapfrog3DPrinters/OctoPrint-flashArduino.git
+OCTOPI_OCTOPRINT_GCODERENDER_REPO = https://github.com/Leapfrog3DPrinters/OctoPrint-gcodeRender.git

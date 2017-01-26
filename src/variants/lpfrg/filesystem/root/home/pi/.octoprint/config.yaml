@@ -1,0 +1,175 @@
+accessControl:
+  autologinAs: Bolt
+  autologinLocal: true
+  localNetworks:
+  - 127.0.0.1/8
+  salt: em2KXbkxq1CKXWjBFGUGmX7j8N7DvkFi
+api:
+  key: 36B0E894EF9848B6B3B29DBD1A3A48D9
+appearance:
+  name: Debug
+feature:
+  modelSizeDetection: false
+plugins:
+  _disabled:
+  - cura
+  - pluginmanager
+  - announcements
+  - softwareupdate
+  - corewizard
+  announcements:
+    channels:
+      _important:
+        read_until: 1460575175
+  discovery:
+    upnpUuid: f654b959-381b-492e-9e0c-82b9303ef6db
+  flasharduino:
+    avrdude_path: /usr/bin/avrdude
+  lui:
+    changelog_version: 1.0.0
+    model: null
+  softwareupdate:
+    _config_version: 4
+    check_providers:
+      networkmanager: networkmanager
+printerProfiles:
+  defaultProfile:
+    axes:
+      e:
+        inverted: false
+        speed: 300
+      x:
+        inverted: false
+        speed: 6000
+      y:
+        inverted: false
+        speed: 6000
+      z:
+        inverted: false
+        speed: 200
+    color: default
+    extruder:
+      count: 2
+      nozzleDiameter: 0.4
+      offsets:
+      - - 0.0
+        - 0.0
+      - - 0.0
+        - 0.0
+    heatedBed: true
+    id: _default
+    model: Generic RepRap Printer
+    name: Default
+    volume:
+      depth: 350.0
+      formFactor: rectangular
+      height: 200.0
+      origin: lowerleft
+      width: 365.0
+serial:
+  autoconnect: true
+  baudrate: 250000
+  log: false
+  port: /dev/ttyUSB0
+  timeout:
+    communication: 150
+    connection: 5
+server:
+  commands:
+    serverRestartCommand: sudo service octoprint restart
+    systemRestartCommand: sudo shutdown -r now
+    systemShutdownCommand: sudo shutdown -h now
+  firstRun: false
+  preemptiveCache:
+    exceptions:
+    - /
+  secretKey: a1jtTcfAPa3zgNwnnqCEb841n5hwWZxh
+  seenWizards:
+    cura: null
+    softwareupdate: null
+system:
+  actions:
+  - action: streamon
+    command: /home/pi/scripts/webcam start
+    confirm: false
+    name: Start video stream
+  - action: streamoff
+    command: /home/pi/scripts/webcam stop
+    confirm: false
+    name: Stop video stream
+  - action: update_lui
+    command: cd /home/pi/OctoPrint-LUI && git pull && /home/pi/OctoPrint/venv/bin/python
+      setup.py install
+    confirm: false
+    name: Update LUI
+  - action: update_networkmanager
+    command: cd /home/pi/OctoPrint-NetworkManager && git pull && /home/pi/OctoPrint/venv/bin/python
+      setup.py install
+    confirm: false
+    name: Update NetworkManager
+  - action: update_octoprint
+    command: cd /home/pi/OctoPrint && git pull && /home/pi/OctoPrint/venv/bin/python
+      setup.py install
+    confirm: false
+    name: Update OctoPrint
+  - action: update_flasharduino
+    command: cd /home/pi/OctoPrint-flashArduino && git pull && /home/pi/OctoPrint/venv/bin/python
+      setup.py install
+    confirm: false
+    name: Update Flash Firmware Module
+  - action: update_gcoderender
+    command: cd /home/pi/OctoPrint-gcodeRender && git pull && /home/pi/OctoPrint/venv/bin/python
+      setup.py install
+    confirm: false
+    name: Update Gcode Render Module
+temperature:
+  profiles:
+  - bed: 65
+    extruder: 230
+    name: ABS
+  - bed: 40
+    extruder: 215
+    name: PLA
+  - bed: 50
+    extruder: 240
+    name: Flex
+  - bed: 60
+    extruder: 240
+    name: PET
+  - bed: 45
+    extruder: 195
+    name: PVA
+  - bed: 45
+    extruder: 205
+    name: pva1
+  - bed: 60
+    extruder: 200
+    name: petg
+  - bed: 70
+    extruder: 230
+    name: hybrid
+  - bed: 60
+    extruder: 210
+    name: petg2
+  - bed: 70
+    extruder: 230
+    name: nylon
+  - bed: 80
+    extruder: 270
+    name: ht
+  - bed: 0
+    extruder: 200
+    name: pro1
+  - bed: 60
+    extruder: 220
+    name: proone
+webcam:
+  ffmpeg: /usr/bin/avconv
+  snapshot: http://127.0.0.1:8080/?action=snapshot
+  stream: http://127.0.0.1:8080/?action=stream
+  timelapse:
+    fps: 25
+    options:
+      interval: 10
+    postRoll: 0
+    type: timed

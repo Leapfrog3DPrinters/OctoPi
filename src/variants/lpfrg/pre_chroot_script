@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -x
+echo "" > /dev/null
+
+source /common.sh
+install_chroot_fail_on_error_trap
+
+apt-get update
+
+apt-get install --yes raspberrypi-ui-mods lightdm xinit lxterminal
+
+echo "--- Setting up Pi to boot to desktop"
+systemctl set-default graphical.target
+
+echo "--- Removing uninstalled applications from desktop"
+# we make sure that non of the non-installed packages show up in either
+# the default lxde panel or menu
+basefolder="/usr/share/raspi-ui-overrides/applications/"
+lxde_panel_file="/etc/xdg/lxpanel/profile/LXDE-pi/panels/panel"
+files="libreoffice-draw libreoffice-math libreoffice-startcenter bluej greenfoot wolfram-mathematica wolfram-language"
+
+for entry in $files
+do
+        desktop_file="$basefolder$entry.desktop"
+
+        # hide .desktop file from menu
+        grep "Hidden: true" $desktop_file || echo "Hidden: true" >> $desktop_file
+
+        # remove any links to it from panel
+        perl -i -p0e 's!\s*Button {\n\s*id='"$desktop_file"'\n\s*}!!igs' "$lxde_panel_file"
+done

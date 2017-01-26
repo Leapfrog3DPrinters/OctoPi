@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -x
+
+source /common.sh
+install_chroot_fail_on_error_trap
+
+echo "--- Copying additional LPFRG files"
+unpack /filesystem/root /
+
+#cleanup
+apt-get clean
+
+pushd /home/pi
+	echo "--- Installing OctoPrint-LUI"
+
+	gitclone OCTOPI_OCTOPRINT_LUI_REPO OctoPrint-LUI
+	pushd OctoPrint-LUI
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/OctoPrint/venv/bin/python setup.py install
+	popd
+
+	echo "--- Installing OctoPrint-flashArduino"
+
+	gitclone OCTOPI_OCTOPRINT_FLASHARDUINO_REPO OctoPrint-flashArduino
+	pushd OctoPrint-flashArduino
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/OctoPrint/venv/bin/python setup.py install
+	popd
+
+	echo "--- Installing OctoPrint-gcodeRender"
+
+	gitclone OCTOPI_OCTOPRINT_GCODERENDER_REPO OctoPrint-gcodeRender
+	pushd OctoPrint-gcodeRender
+		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/OctoPrint/venv/bin/python setup.py install
+	popd
+popd
+
+echo "--- Installing aasoftpoweroff"
+pip install raspberry-gpio-python
+update-rc.d aasoftpoweroff defaults 
+
+echo "--- Installing cleanupmounts"
+update-rc.d cleanupmounts defaults
+
+
+pushd /home/pi/.config/pcmanfm/LXDE-pi/
+	echo "--- Disabling autorun (on mount)"
+	sed -i "s/autorun=1/autorun=0/g" pcmanfm.conf
+popd
