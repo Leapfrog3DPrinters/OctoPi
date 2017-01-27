@@ -59,9 +59,3 @@ update-rc.d aasoftpoweroff defaults
 echo "--- Installing cleanupmounts"
 chmod +x /etc/init.d/cleanupmounts
 update-rc.d cleanupmounts defaults
-
-
-pushd /home/pi/.config/pcmanfm/LXDE-pi/
-	echo "--- Disabling autorun (on mount)"
-	sed -i "s@autorun=1@autorun=0@g" pcmanfm.conf
-popd
