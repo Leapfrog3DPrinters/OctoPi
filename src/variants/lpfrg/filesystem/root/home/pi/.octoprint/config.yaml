@@ -3,11 +3,8 @@ accessControl:
   autologinLocal: true
   localNetworks:
   - 127.0.0.1/8
-  salt: em2KXbkxq1CKXWjBFGUGmX7j8N7DvkFi
-api:
-  key: 36B0E894EF9848B6B3B29DBD1A3A48D9
 appearance:
-  name: Debug
+  name: Bolt
 feature:
   modelSizeDetection: false
 plugins:
@@ -17,12 +14,8 @@ plugins:
   - announcements
   - softwareupdate
   - corewizard
-  announcements:
-    channels:
-      _important:
-        read_until: 1460575175
   discovery:
-    upnpUuid: f654b959-381b-492e-9e0c-82b9303ef6db
+    publicPort: 80
   flasharduino:
     avrdude_path: /usr/bin/avrdude
   lui:
@@ -80,13 +73,6 @@ server:
     systemRestartCommand: sudo shutdown -r now
     systemShutdownCommand: sudo shutdown -h now
   firstRun: false
-  preemptiveCache:
-    exceptions:
-    - /
-  secretKey: a1jtTcfAPa3zgNwnnqCEb841n5hwWZxh
-  seenWizards:
-    cura: null
-    softwareupdate: null
 system:
   actions:
   - action: streamon

@@ -11,33 +11,45 @@ unpack /filesystem/root /
 apt-get clean
 
 pushd /home/pi
-	echo "--- Installing OctoPrint-LUI"
+	if [ "$OCTOPI_INCLUDE_OCTOPRINT_LUI" == "yes" ]
+ 	then
+		echo "--- Installing OctoPrint-LUI"
 
-	gitclone OCTOPI_OCTOPRINT_LUI_REPO OctoPrint-LUI
-	pushd OctoPrint-LUI
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
-	popd
+		gitclone OCTOPI_OCTOPRINT_LUI_REPO OctoPrint-LUI
+		pushd OctoPrint-LUI
+			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
+		popd
+	fi
 
-	echo "--- Installing OctoPrint-flashArduino"
+	if [ "$OCTOPI_INCLUDE_OCTOPRINT_FLASHARDUINO" == "yes" ]
+ 	then
+		echo "--- Installing OctoPrint-flashWArduino"
 
-	gitclone OCTOPI_OCTOPRINT_FLASHARDUINO_REPO OctoPrint-flashArduino
-	pushd OctoPrint-flashArduino
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
-	popd
+		gitclone OCTOPI_OCTOPRINT_FLASHARDUINO_REPO OctoPrint-flashArduino
+		pushd OctoPrint-flashArduino
+			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
+		popd
+	fi
 
-	echo "--- Installing OctoPrint-gcodeRender"
+	if [ "$OCTOPI_INCLUDE_OCTOPRINT_GCODERENDER" == "yes" ]
+ 	then
+		echo "--- Installing OctoPrint-gcodeRender"
 
-	gitclone OCTOPI_OCTOPRINT_GCODERENDER_REPO OctoPrint-gcodeRender
-	pushd OctoPrint-gcodeRender
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
-	popd
+		gitclone OCTOPI_OCTOPRINT_GCODERENDER_REPO OctoPrint-gcodeRender
+		pushd OctoPrint-gcodeRender
+			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
+		popd
+	fi
 
-	echo "--- Installing OctoPrint-NetworkManager"
+	if [ "$OCTOPI_INCLUDE_OCTOPRINT_NETWORKMANAGER" == "yes" ]
+ 	then
+		echo "--- Installing OctoPrint-NetworkManager"
 
-	gitclone OCTOPI_OCTOPRINT_NETWORKMANAGER_REPO OctoPrint-NetworkManager
-	pushd OctoPrint-NetworkManager
-		PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
-	popd
+		gitclone OCTOPI_OCTOPRINT_NETWORKMANAGER_REPO OctoPrint-NetworkManager
+		pushd OctoPrint-NetworkManager
+			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
+		popd
+	fi
 popd
 
 echo "--- Installing aasoftpoweroff"
@@ -51,5 +63,5 @@ update-rc.d cleanupmounts defaults
 
 pushd /home/pi/.config/pcmanfm/LXDE-pi/
 	echo "--- Disabling autorun (on mount)"
-	sed -i "s/autorun=1/autorun=0/g" pcmanfm.conf
+	sed -i "s@autorun=1@autorun=0@g" pcmanfm.conf
 popd
