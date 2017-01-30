@@ -14,7 +14,7 @@ perform_resize="yes"
 #
 # Defaults to auto
 #
-#camera="auto"
+camera="usb"
 
 ### Additional options to supply to MJPG Streamer for the USB camera
 #
@@ -23,7 +23,7 @@ perform_resize="yes"
 #
 # Defaults to a resolution of 640x480 px and a framerate of 10 fps
 #
-#camera_usb_options="-r 640x480 -f 10"
+camera_usb_options="-r 1280x720 -f 10"
 
 ### Additional webcam devices known to cause problems with -f
 #
@@ -45,7 +45,7 @@ perform_resize="yes"
 #
 # If this fixes your problem, please report it back so we can include the device
 # out of the box.
-#additional_brokenfps_usb_devices=("046d:082b" "aabb:ccdd")
+additional_brokenfps_usb_devices=("046d:082b" "05a3:9310")
 
 ### additional options to supply to MJPG Streamer for the RasPi Cam
 #

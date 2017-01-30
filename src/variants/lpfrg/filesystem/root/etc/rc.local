@@ -28,6 +28,6 @@ echo 1 0eef 0005 259 > /sys/module/hid_multitouch/drivers/hid\:hid-multitouch/ne
 iwconfig wlan0 power off
 
 # tlsdate first run with leap of faith
-tlsdate -V -l -t
+tlsdate -V -l -t -s
 
 exit 0
