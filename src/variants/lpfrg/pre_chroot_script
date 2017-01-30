@@ -9,7 +9,7 @@ apt-get update
 
 apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal
 
-echo "--- Setting up Pi to boot to desktop"
+echo "--- Setting up to boot to desktop"
 systemctl set-default graphical.target
 
 echo "--- Removing uninstalled applications from desktop"
@@ -29,3 +29,6 @@ do
         # remove any links to it from panel
         perl -i -p0e 's!\s*Button {\n\s*id='"$desktop_file"'\n\s*}!!igs' "$lxde_panel_file"
 done
+
+echo "--- Installing chromium"
+apt-get install --yes chromium-browser

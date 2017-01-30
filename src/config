@@ -100,6 +100,9 @@ fi
 # WiringPi
 [ -n "$OCTOPI_INCLUDE_WIRINGPI" ] || OCTOPI_INCLUDE_WIRINGPI=yes
 
+# Custom networksettings in /boot/..
+[ -n "$OCTOPI_ENABLE_BOOT_NETWORKSETTINGS" ] || OCTOPI_ENABLE_BOOT_NETWORKSETTINGS=yes
+
 ###############################################################################
 # Rewrite any build urls that are not yet set if we have a repository mirror
 # configured.

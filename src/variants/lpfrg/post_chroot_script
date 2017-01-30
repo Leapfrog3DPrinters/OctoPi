@@ -4,6 +4,17 @@ set -x
 source /common.sh
 install_chroot_fail_on_error_trap
 
+echo "--- Installing NetworkManager"
+apt-get install --yes network-manager
+
+echo "--- Removing interfaces from ifupdown"
+pushd /etc/network
+	sed -i "s@iface eth0@#iface eth0@g" interfaces
+	sed -i "s@iface wlan0@#iface wlan0@g" interfaces
+	sed -i "s@iface wlan1@#iface wlan1@g" interfaces
+	sed -i "s@wpa-conf@#wpa-conf@g" interfaces
+popd
+
 echo "--- Copying additional LPFRG files"
 unpack /filesystem/root /
 
@@ -59,3 +70,22 @@ update-rc.d aasoftpoweroff defaults
 echo "--- Installing cleanupmounts"
 chmod +x /etc/init.d/cleanupmounts
 update-rc.d cleanupmounts defaults
+
+echo "--- Installing dorotatetouch"
+chmod +x /etc/init.d/dorotatetouch
+update-rc.d dorotatetouch defaults
+
+echo "--- Disabling autorun"
+pushd /home/pi/.config/pcmanfm/LXDE-pi
+	sed -i "s@autorun=1@autorun=0@g" pcmanfm.conf
+popd
+
+echo "-- Setting timezone"
+pushd /home/pi
+	echo "" >> .profile
+	echo "TZ='Europe/Amsterdam'" >> .profile
+	echo "export TZ" >> .profile
+popd
+
+echo "-- Installing tlsdate"
+sudo apt-get install --yes tlsdate
