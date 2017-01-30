@@ -30,5 +30,9 @@ do
         perl -i -p0e 's!\s*Button {\n\s*id='"$desktop_file"'\n\s*}!!igs' "$lxde_panel_file"
 done
 
+echo "--- Removing xscreensaver"
+apt-get purge --yes xscreensaver
+
 echo "--- Installing chromium"
 apt-get install --yes chromium-browser
+
