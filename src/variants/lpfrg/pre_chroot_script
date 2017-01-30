@@ -35,7 +35,11 @@ apt-get purge --yes xscreensaver
 
 echo "--- Installing chromium"
 apt-get install --yes chromium-browser
-pushd /home/pi/.config
-	mkdir chromium
-	chown pi chromium
+
+pushd /home/pi
+	mkdir .config
+	pushd .config
+		mkdir chromium
+		chown pi chromium
+	popd
 popd
