@@ -26,39 +26,7 @@ plugins:
     check_providers:
       networkmanager: networkmanager
 printerProfiles:
-  defaultProfile:
-    axes:
-      e:
-        inverted: false
-        speed: 300
-      x:
-        inverted: false
-        speed: 6000
-      y:
-        inverted: false
-        speed: 6000
-      z:
-        inverted: false
-        speed: 200
-    color: default
-    extruder:
-      count: 2
-      nozzleDiameter: 0.4
-      offsets:
-      - - 0.0
-        - 0.0
-      - - 0.0
-        - 0.0
-    heatedBed: true
-    id: _default
-    model: Generic RepRap Printer
-    name: Default
-    volume:
-      depth: 350.0
-      formFactor: rectangular
-      height: 200.0
-      origin: lowerleft
-      width: 365.0
+  default: bolt
 serial:
   autoconnect: true
   baudrate: 250000

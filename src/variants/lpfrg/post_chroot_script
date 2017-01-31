@@ -18,6 +18,9 @@ popd
 echo "--- Copying additional LPFRG files"
 unpack /filesystem/root /
 
+echo "--- Setting rights"
+chmod +x /etc/rc.local
+
 #cleanup
 apt-get clean
 
@@ -86,9 +89,7 @@ popd
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
 
-if [ -f "/home/pi/.config/lxpanel/LXDE-pi/panels/panel" ]; then
+if [ -f "/home/pi/.config/lxpanel/LXDE-pi/panels/panel" ]
+then
   rm /home/pi/.config/lxpanel/LXDE-pi/panels/panel
 fi
-
-echo "-- Fixing rc.local"
-update-rc.d rc.local defaults
