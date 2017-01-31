@@ -91,5 +91,4 @@ if [ -f "/home/pi/.config/lxpanel/LXDE-pi/panels/panel" ]; then
 fi
 
 echo "-- Fixing rc.local"
-systemctl daemon-reload
 update-rc.d rc.local defaults
