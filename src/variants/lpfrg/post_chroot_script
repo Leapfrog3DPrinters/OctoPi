@@ -65,6 +65,7 @@ popd
 
 echo "--- Installing aasoftpoweroff"
 chmod +x /etc/init.d/aasoftpoweroff
+chmod +x /home/pi/scripts/poweroff.py
 update-rc.d aasoftpoweroff defaults 
 
 echo "--- Installing cleanupmounts"

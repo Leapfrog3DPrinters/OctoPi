@@ -12,6 +12,7 @@ def callback(c):
     subprocess.call(COMMAND.split())
 
 import RPi.GPIO as GPIO
+import time
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(PWR_PIN, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(LED_PIN, GPIO.OUT, initial=GPIO.HIGH)
@@ -20,4 +21,4 @@ GPIO.setup(BUTTON_PIN, GPIO.IN)
 GPIO.add_event_detect(BUTTON_PIN, GPIO.RISING, callback=callback, bouncetime=BOUNCETIME)
 
 while 1:
-	time.sleep(0.1)
+    time.sleep(0.1)
