@@ -83,4 +83,12 @@ pushd /home/pi
 popd
 
 echo "-- Installing tlsdate"
-sudo apt-get install --yes tlsdate
+apt-get install --yes tlsdate
+
+if [ -f "/home/pi/.config/lxpanel/LXDE-pi/panels/panel" ]; then
+  rm /home/pi/.config/lxpanel/LXDE-pi/panels/panel
+fi
+
+echo "-- Fixing rc.local"
+systemctl daemon-reload
+update-rc.d rc.local defaults

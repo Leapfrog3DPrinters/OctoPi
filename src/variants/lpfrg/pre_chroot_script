@@ -37,9 +37,9 @@ echo "--- Installing chromium"
 apt-get install --yes chromium-browser
 
 pushd /home/pi
-	mkdir .config
+	mkdir .config -p
 	pushd .config
-		mkdir chromium
+		mkdir chromium -p
 		chown pi chromium
 	popd
 popd
