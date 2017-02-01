@@ -88,8 +88,3 @@ popd
 
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
-
-if [ -f "/home/pi/.config/lxpanel/LXDE-pi/panels/panel" ]
-then
-  rm /home/pi/.config/lxpanel/LXDE-pi/panels/panel
-fi

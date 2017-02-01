@@ -6,6 +6,7 @@ source /common.sh
 install_chroot_fail_on_error_trap
 
 mkdir /home/pi/.config -p
+chown -hR pi:pi /home/pi/.confi
 
 apt-get update
 
@@ -29,8 +30,16 @@ do
         grep "Hidden: true" $desktop_file || echo "Hidden: true" >> $desktop_file
 
         # remove any links to it from panel
-        perl -i -p0e 's!\s*Button {\n\s*id='"$desktop_file"'\n\s*}!!igs' "$lxde_panel_file"
+        # No need for now, removing complete panelfile anyway
+        #perl -i -p0e 's!\s*Button {\n\s*id='"$desktop_file"'\n\s*}!!igs' "$lxde_panel_file"
 done
+
+# Delete taskbar
+if [ -f lxde_panel_file ]
+then
+  rm lxde_panel_file
+fi
+
 
 echo "--- Removing xscreensaver"
 apt-get purge --yes xscreensaver
@@ -40,5 +49,5 @@ apt-get install --yes chromium-browser
 
 pushd /home/pi/.config
 	mkdir chromium -p
-	chown pi chromium
+	chown -hR pi:pi chromium
 popd
