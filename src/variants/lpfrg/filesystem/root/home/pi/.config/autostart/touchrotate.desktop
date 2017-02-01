@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=Rotate touch
-Exec=/etc/dorotatetouch
+Exec=dorotatetouch
 Icon=
 Comment=

@@ -10,7 +10,7 @@ chown -hR pi:pi /home/pi/.config
 
 apt-get update
 
-apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal
+apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
 
 echo "--- Setting up to boot to desktop"
 systemctl set-default graphical.target
@@ -35,9 +35,9 @@ do
 done
 
 # Delete taskbar
-if [ -f lxde_panel_file ]
+if [ -f "$lxde_panel_file" ]
 then
-  rm lxde_panel_file
+  rm "$lxde_panel_file"
 fi
 
 

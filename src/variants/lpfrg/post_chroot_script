@@ -76,8 +76,7 @@ chmod +x /etc/init.d/cleanupmounts
 update-rc.d cleanupmounts defaults
 
 echo "--- Installing dorotatetouch"
-chmod +x /etc/init.d/dorotatetouch
-update-rc.d dorotatetouch defaults
+chmod +x /usr/bin/dorotatetouch
 
 echo "-- Setting timezone"
 pushd /home/pi
