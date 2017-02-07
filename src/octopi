@@ -46,7 +46,13 @@ pushd $OCTOPI_WORKSPACE
     enlarge_ext $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_IMAGE_ENLARGEROOT
   fi
 
-  # mount root and boot partition
+  if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
+  then
+    home_partition=$(($OCTOPI_ROOT_PARTITION + 1))
+    add_ext $OCTOPI_IMG_PATH $home_partition $OCTOPI_IMAGE_HOMEPARTITION
+  fi
+
+  # mount root, home and boot partition
   mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH
   if [ -n "$OCTOPI_APT_CACHE" ]
   then
@@ -62,6 +68,12 @@ pushd $OCTOPI_WORKSPACE
       fixLd
     fi
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
+
+    #Edit fstab to account for the new home partition
+    if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
+    then
+      sed -i "3 a /dev/mmcblk0p3 /home ext4 rw,user,auto,exec 0 2" /etc/fstab
+    fi
 
     # if an additional pre-script is defined, execute that now
     if [ -n "$OCTOPI_PRESCRIPT" ] && [ -f $OCTOPI_PRESCRIPT/chroot_script ]; then

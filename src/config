@@ -46,6 +46,9 @@ fi
 # if set will enlarge root parition prior to build by provided size in MB
 [ -n "$OCTOPI_IMAGE_ENLARGEROOT" ] || OCTOPI_IMAGE_ENLARGEROOT=400
 
+# if set will create a seperate home partition with given size in MB
+[ -n "$OCTOPI_IMAGE_HOMEPARTITION" ] || OCTOPI_IMAGE_HOMEPARTITION=400
+
 # if set will resize root partition on image after build to minimum size + 
 # provided size in MB
 [ -n "$OCTOPI_IMAGE_RESIZEROOT" ] || OCTOPI_IMAGE_RESIZEROOT=200

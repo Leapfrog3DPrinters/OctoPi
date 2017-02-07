@@ -114,6 +114,7 @@ function mount_image() {
   image_path=$1
   root_partition=$2
   mount_path=$3
+  home_partition=$4
   echo "burr"
   echo $2
 
@@ -133,6 +134,13 @@ function mount_image() {
   sudo mkdir -p $mount_path/dev/pts
   sudo mount -o bind /dev $mount_path/dev
   sudo mount -o bind /dev/pts $mount_path/dev/pts
+
+  if [ -n "$home_partition" ]
+  then    
+    home_offset=$(($(echo "$fdisk_output" | grep "$image_path$home_partition" | awk '{print $4-0}') * 512))
+    echo "Mounting home partition at offset $home_offset"
+    sudo mount -o loop,offset=$home_offset $image_path $mount_path/home
+  fi
 }
 
 function unmount_image() {
@@ -262,7 +270,7 @@ $offset
 p
 w
 FDISK
-  $offsetb = $(($offset*512))
+  $offsetb=$(($offset*512))
   LODEV=$(losetup -f --show -o $offsetb $image)
   trap 'losetup -d $LODEV' EXIT
   mkfs.ext4 $LODEV
