@@ -1,9 +1,10 @@
 ### Configure whether to automatically resize the SD on first boot
 #
 # Available options are:
-# - yes: perform resize
+# - home: perform resize of home partition 
+# - root: perform resize of root partition 
 # - no: don't perform resize
-perform_resize="no"
+perform_resize="home"
 
 ### Configure which camera to use
 #

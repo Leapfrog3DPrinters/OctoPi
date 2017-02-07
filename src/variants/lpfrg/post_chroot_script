@@ -20,6 +20,8 @@ unpack /filesystem/root /
 
 echo "--- Setting rights"
 chmod +x /etc/rc.local
+chown -hR pi:pi /home/pi/.config/chromium
+chmod +x /home/pi/scripts/expand-homefs
 
 #cleanup
 apt-get clean
@@ -87,3 +89,30 @@ popd
 
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
+
+
+if [ -n "$OCTOPI_ROOT_READONLY" ]
+then
+	echo "--- Making root read-only"
+
+	kernelv=$(uname -r)
+	update-initramfs -c -k $kernelv
+
+	pushd /boot
+		mv "initrd.img-$kernelv" "initrd7.img"
+
+		echo " boot=overlay" >> cmdline.txt
+		echo "kernel=kernel7.img" >> config.txt
+		echo "initramfs initrd7.img" >> config.txt
+	popd
+else
+	pushd /usr/share/initramfs-tools
+		sed -i "s@usbhid overlay@usbhid@g" hook-functions
+
+		pushd scripts
+			rm overlay
+			rm -R overlay-premount
+			rm -R overlay-bottom 
+		popd
+	popd
+fi
