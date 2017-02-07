@@ -237,6 +237,43 @@ FDISK
   echo "Resized parition $partition of $image to +$size MB"
 }
 
+function add_ext() {
+  # call like this: add_ext /path/to/image partition size
+  #
+  # will enlarge partition number <partition> on /path/to/image by <size> MB
+  image=$1
+  partition=$2
+  size=$3
+
+  prevpartition=$(expr $2 - 1)
+  echo "Adding $size MB to partition $partition of $image"
+  prevstart=$(sfdisk -d $image | grep "$image$prevpartition" | awk '{print $4-0}')
+  prevsize=$(sfdisk -d $image | grep "$image$prevpartition" | awk '{print $6-0}')
+
+  offset=$((($prevstart+$prevsize)))
+  dd if=/dev/zero bs=1M count=$size >> $image
+  fdisk $image <<FDISK
+p
+n
+p
+$partition
+$offset
+
+p
+w
+FDISK
+  $offsetb = $(($offset*512))
+  LODEV=$(losetup -f --show -o $offsetb $image)
+  trap 'losetup -d $LODEV' EXIT
+  mkfs.ext4 $LODEV
+  e2fsck -fy $LODEV
+  #resize2fs -p $LODEV
+  losetup -d $LODEV
+
+  trap - EXIT
+  echo "Add parition $partition of $image with +$size MB"
+}
+
 function shrink_ext() {
   # call like this: shrink_ext /path/to/image partition size
   #

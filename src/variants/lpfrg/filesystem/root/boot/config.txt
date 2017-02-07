@@ -62,6 +62,9 @@ display_rotate=1
 dtparam=audio=on
 #dtoverlay=vc4-kms-v3d
 
+# Disable bluetooth
+dtoverlay=pi3-disable-bt
+
 gpu_mem=128
 start_x=1
 
