@@ -270,7 +270,7 @@ $offset
 p
 w
 FDISK
-  $offsetb=$(($offset*512))
+  offsetb=$(($offset*512))
   LODEV=$(losetup -f --show -o $offsetb $image)
   trap 'losetup -d $LODEV' EXIT
   mkfs.ext4 $LODEV
