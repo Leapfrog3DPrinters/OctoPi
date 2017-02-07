@@ -3,7 +3,7 @@
 # Available options are:
 # - yes: perform resize
 # - no: don't perform resize
-perform_resize="yes"
+perform_resize="no"
 
 ### Configure which camera to use
 #

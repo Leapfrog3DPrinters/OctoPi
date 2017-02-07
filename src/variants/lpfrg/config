@@ -4,8 +4,10 @@ OCTOPI_OVERRIDE_HOSTNAME=lpfrgPi
 OCTOPI_INCLUDE_OCTOPIPANEL=no
 OCTOPI_INCLUDE_WIRINGPI=no
 OCTOPI_INCLUDE_CURAENGINE=no
-OCTOPI_IMAGE_ENLARGEROOT=2048 #TODO: Find smaller values that will do the job
+OCTOPI_IMAGE_ENLARGEROOT=1200 #TODO: Find smaller values that will do the job
 OCTOPI_IMAGE_HOMEPARTITION=512 #TODO: Find smaller values that will do the job
+# Skip resize root for now (may give issues with home partition)
+OCTOPI_IMAGE_RESIZEROOT=
 OCTOPI_ENABLE_BOOT_NETWORKSETTINGS=no
 
 # Custom config
