@@ -94,25 +94,41 @@ apt-get install --yes tlsdate
 if [ -n "$OCTOPI_ROOT_READONLY" ]
 then
 	echo "--- Making root read-only"
+	pushd /usr/share/initramfs-tools
+		sed -i "528s@usbhid@usbhid overlay@g" hook-functions
+		pushd scripts
+			# overlay is copied from filesystem
+			cp -rp local-premount overlay-premount
+			cp -rp local-bottom overlay-bottom
+		popd
+	popd
+	kernelv=$(ls -t /lib/modules/ | head -1)
 
-	kernelv=$(uname -r)
+	echo "Kernel version: $kernelv"
 	update-initramfs -c -k $kernelv
 
 	pushd /boot
-		mv "initrd.img-$kernelv" "initrd7.img"
+		mv -f "initrd.img-$kernelv" "initrd7.img"
 
-		echo " boot=overlay" >> cmdline.txt
+		sed -i '1s@^@boot=overlay @' cmdline.txt
 		echo "kernel=kernel7.img" >> config.txt
 		echo "initramfs initrd7.img" >> config.txt
 	popd
 else
 	pushd /usr/share/initramfs-tools
-		sed -i "s@usbhid overlay@usbhid@g" hook-functions
+		#sed -i "s@usbhid overlay@usbhid@g" hook-functions
 
 		pushd scripts
 			rm overlay
-			rm -R overlay-premount
-			rm -R overlay-bottom 
 		popd
 	popd
+fi
+
+echo "--- Cleanup"
+apt-get autoremove --yes
+
+echo "--- Update pi password"
+if [ -n $OCTOPI_PI_PASSWORD ]
+then
+	echo "pi:$OCTOPI_PI_PASSWORD" | chpasswd
 fi
