@@ -102,7 +102,7 @@ then
 			cp -rp local-bottom overlay-bottom
 		popd
 	popd
-	kernelv=$(ls -t /lib/modules/ | head -1)
+	kernelv=$(ls -t /lib/modules/ | grep v7)
 
 	echo "Kernel version: $kernelv"
 	update-initramfs -c -k $kernelv
