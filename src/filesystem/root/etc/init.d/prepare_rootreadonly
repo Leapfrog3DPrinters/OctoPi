@@ -14,13 +14,13 @@
 do_start () {
   . /boot/octopi.txt
 
-  if [ "$perform_resize" != "no" && $(ls /etc/rc3.d/ | grep "prepare_resize" -q)]
+  if [ "$perform_resize" != "no" && $(ls /etc/rc3.d/ | grep "prepare_resize" -q) ]
   then
     log_success_msg "Waiting for root/home resize to complete"
     exit 0
   fi
 
-  if [ "$root_readonly" == "yes" ]
+  if [ "$root_readonly" = "yes" ]
   then
     /home/pi/scripts/root_readonly >> /var/log/prepare_rootreadonly
     /usr/sbin/update-rc.d prepare_rootreadonly remove >> /var/log/prepare_rootreadonly

@@ -56,10 +56,10 @@ EOF
   ASK_TO_REBOOT=1
 
   # now set up an init.d script
-cat <<EOF > /etc/init.d/resize2fs_once &&
+cat <<EOF > /etc/init.d/homeresize2fs_once &&
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          resize2fs_once
+# Provides:          homeresize2fs_once
 # Required-Start:
 # Required-Stop:
 # Default-Start: 3
@@ -72,10 +72,10 @@ cat <<EOF > /etc/init.d/resize2fs_once &&
 
 case "\$1" in
   start)
-    log_daemon_msg "Starting resize2fs_once" &&
+    log_daemon_msg "Starting homeresize2fs_once" &&
     resize2fs /dev/$HOME_PART &&
-    update-rc.d resize2fs_once remove &&
-    rm /etc/init.d/resize2fs_once &&
+    update-rc.d homeresize2fs_once remove &&
+    rm /etc/init.d/homeresize2fs_once &&
     log_end_msg \$?
     ;;
   *)
@@ -84,8 +84,8 @@ case "\$1" in
     ;;
 esac
 EOF
-  chmod +x /etc/init.d/resize2fs_once &&
-  update-rc.d resize2fs_once defaults
+  chmod +x /etc/init.d/homeresize2fs_once &&
+  update-rc.d homeresize2fs_once defaults
 }
 
 echo 'Expanding home partition...'
