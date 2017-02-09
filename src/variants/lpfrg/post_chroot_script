@@ -18,10 +18,12 @@ popd
 echo "--- Copying additional LPFRG files"
 unpack /filesystem/root /
 
-echo "--- Setting rights"
+echo "--- Setting owners and permissions"
 chmod +x /etc/rc.local
 chown -hR pi:pi /home/pi/.config/chromium
-chmod +x /home/pi/scripts/expand-homefs
+chown -hR pi:pi /home/pi/scripts
+chmod +x /home/pi/scripts/enable_cursor
+chmod +x /home/pi/scripts/disable_cursor
 
 #cleanup
 apt-get clean
@@ -39,12 +41,15 @@ pushd /home/pi
 
 	if [ "$OCTOPI_INCLUDE_OCTOPRINT_FLASHARDUINO" == "yes" ]
  	then
-		echo "--- Installing OctoPrint-flashWArduino"
+		echo "--- Installing OctoPrint-flashArduino"
 
 		gitclone OCTOPI_OCTOPRINT_FLASHARDUINO_REPO OctoPrint-flashArduino
 		pushd OctoPrint-flashArduino
 			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 		popd
+
+		echo "--- Installing avrdude"
+		apt-get install --yes avrdude
 	fi
 
 	if [ "$OCTOPI_INCLUDE_OCTOPRINT_GCODERENDER" == "yes" ]

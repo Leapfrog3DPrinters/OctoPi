@@ -3,7 +3,7 @@ set -x
 
 echo "--- Making root read-only"
 echo "--- Preparing overlay"
-cp -f /home/pi/scripts/overlay /usr/share/initramfs-tools/overlay
+cp -f /home/pi/scripts/overlay /usr/share/initramfs-tools/scripts/overlay
 
 pushd /usr/share/initramfs-tools
 	grep -q "overlay" hook-functions || sed -i "528s@usbhid@usbhid overlay@g" hook-functions

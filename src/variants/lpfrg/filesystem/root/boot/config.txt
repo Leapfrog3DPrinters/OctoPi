@@ -65,6 +65,7 @@ dtparam=audio=on
 # Disable bluetooth
 dtoverlay=pi3-disable-bt
 
+disable_splash=1
 gpu_mem=128
 start_x=1
 

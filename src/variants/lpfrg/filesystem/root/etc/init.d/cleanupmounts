@@ -1,12 +1,42 @@
-#!/bin/bash
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          cleanupmounts
+# Required-Start:    $local_fs
+# Required-Stop:     
+# Default-Start:     S
+# Default-Stop:      0
+# Short-Description: Leapfrog cleanup mounts
+# Description:       Removes unused mountpoints from media/pi folder
+### END INIT INFO
 
-FILES=/media/pi/*/
-for f in $FILES;
-do
-    if [ "$f" != "$FILES" ]; then
-        echo "Removing unused mountpoint $f"
-        mountpoint -q "$f" || rm -d -f "$f"
-    fi
-done
+. /lib/lsb/init-functions
 
-exit 0
+do_start () {
+	FILES=/media/pi/*/
+	for f in $FILES;
+	do
+	    if [ "$f" != "$FILES" ]; then
+	        echo "Removing unused mountpoint $f" >> /var/log/cleanupmounts
+	        mountpoint -q "$f" || rm -d -f "$f"
+	    fi
+	done
+
+	exit 0
+}
+
+case "$1" in
+  start|"")
+        do_start
+        ;;
+  restart|reload|force-reload)
+        echo "Error: argument '$1' not supported" >&2
+        exit 3
+        ;;
+  stop)
+        # No-op
+        ;;
+  *)
+        echo "Usage: cleanupmounts [start|stop]" >&2
+        exit 3
+        ;;
+esac

@@ -38,6 +38,14 @@ fi
 echo exit 101 > /usr/sbin/policy-rc.d
 chmod +x /usr/sbin/policy-rc.d
 
+# Restore home folder if we made a new partition
+if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
+then
+    mkdir /home/pi -p
+    cp -R /etc/skel /home/pi
+    chown -R pi:pi /home/pi
+fi
+
 unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot

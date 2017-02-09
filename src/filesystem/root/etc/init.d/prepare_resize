@@ -23,7 +23,7 @@ do_start () {
     /sbin/reboot
 
     exit 0
-  elif [ "$perform_resize" = "home"]
+  elif [ "$perform_resize" = "home" ]
   then
       /home/pi/scripts/expand-homefs >> /var/log/prepare_resize
       /usr/sbin/update-rc.d prepare_resize remove >> /var/log/prepare_resize

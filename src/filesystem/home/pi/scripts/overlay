@@ -135,31 +135,29 @@ local_mount_root()
 
 	ROOT=$(resolve_device "$ROOT")
 
-#   if [ "${readonly}" = "y" ]; then
-        roflag=-r
-#   else
-#       roflag=-w
-#   fi
+#	if [ "${readonly}" = "y" ]; then
+		roflag=-r
+#	else
+#		roflag=-w
+#	fi
 
-    # FIXME This has no error checking
-    modprobe ${FSTYPE}
+	# FIXME This has no error checking
+	modprobe ${FSTYPE}
 
-    checkfs ${ROOT} root
+	checkfs ${ROOT} root
 
-    # FIXME This has no error checking
-    # Mount root
-    mkdir /upper /lower
-    if [ "${FSTYPE}" != "unknown" ]; then
-        mount ${roflag} -t ${FSTYPE} ${ROOTFLAGS} ${ROOT} /lower
-    else
-        mount ${roflag} ${ROOTFLAGS} ${ROOT} /lower
-    fi
-    modprobe overlay
-    mount -t tmpfs tmpfs /upper
-    mkdir /upper/data /upper/work
-    mount -t overlay \
-        -olowerdir=/lower,upperdir=/upper/data,workdir=/upper/work \
-        overlay ${rootmnt}
+	# FIXME This has no error checking
+	# Mount root
+	mkdir /upper /lower
+	if [ "${FSTYPE}" != "unknown" ]; then
+		mount ${roflag} -t ${FSTYPE} ${ROOTFLAGS} ${ROOT} /lower
+	else
+		mount ${roflag} ${ROOTFLAGS} ${ROOT} /lower
+	fi
+	modprobe overlay
+	mount -t tmpfs tmpfs /upper
+	mkdir /upper/data /upper/work
+	mount -t overlay -olowerdir=/lower,upperdir=/upper/data,workdir=/upper/work overlay ${rootmnt}
 }
 
 local_mount_fs()
