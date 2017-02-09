@@ -10,6 +10,8 @@ OCTOPI_IMAGE_HOMEPARTITION=512 #TODO: Find smaller values that will do the job
 OCTOPI_IMAGE_RESIZEROOT=
 OCTOPI_ENABLE_BOOT_NETWORKSETTINGS=no
 
+# To set the pi password, make a file LPFRGPASSWD in the variants/lpfrg folder (to hide it from git)
+
 if [ -f "$VARIANT_CONFIG_DIR/LPFRGPASSWD" ]; then
 	OCTOPI_PI_PASSWORD=$(<"$VARIANT_CONFIG_DIR/LPFRGPASSWD")
 else

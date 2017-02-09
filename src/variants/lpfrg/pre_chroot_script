@@ -41,8 +41,8 @@ then
 fi
 
 
-echo "--- Removing xscreensaver"
-apt-get purge --yes xscreensaver
+# echo "--- Removing xscreensaver"
+# apt-get purge --yes xscreensaver
 
 echo "--- Installing chromium"
 apt-get install --yes chromium-browser

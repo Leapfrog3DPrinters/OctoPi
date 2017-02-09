@@ -21,6 +21,11 @@ unpack /filesystem/root /
 echo "--- Setting owners and permissions"
 chmod +x /etc/rc.local
 chown -hR pi:pi /home/pi/.config/chromium
+
+chown pi:pi /home/pi/LpfrgScreensaver/lpfrgscreensaver.py
+chown pi:pi /home/pi/LpfrgScreensaver/lpfrg.png
+chmod +x /home/pi/LpfrgScreensaver/lpfrgscreensaver.py
+
 chown -hR pi:pi /home/pi/scripts
 chmod +x /home/pi/scripts/enable_cursor
 chmod +x /home/pi/scripts/disable_cursor
@@ -94,6 +99,9 @@ popd
 
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
+
+echo "-- Installing (requirements for) LpfrgScreensaver"
+apt-get install --yes python-gtk2
 
 echo "--- Cleanup"
 apt-get autoremove --yes
