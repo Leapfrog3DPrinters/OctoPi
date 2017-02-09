@@ -90,40 +90,6 @@ popd
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
 
-
-if [ -n "$OCTOPI_ROOT_READONLY" ]
-then
-	echo "--- Making root read-only"
-	pushd /usr/share/initramfs-tools
-		sed -i "528s@usbhid@usbhid overlay@g" hook-functions
-		pushd scripts
-			# overlay is copied from filesystem
-			cp -rp local-premount overlay-premount
-			cp -rp local-bottom overlay-bottom
-		popd
-	popd
-	kernelv=$(ls -t /lib/modules/ | grep v7)
-
-	echo "Kernel version: $kernelv"
-	update-initramfs -c -k $kernelv
-
-	pushd /boot
-		mv -f "initrd.img-$kernelv" "initrd7.img"
-
-		sed -i '1s@^@boot=overlay @' cmdline.txt
-		echo "kernel=kernel7.img" >> config.txt
-		echo "initramfs initrd7.img" >> config.txt
-	popd
-else
-	pushd /usr/share/initramfs-tools
-		#sed -i "s@usbhid overlay@usbhid@g" hook-functions
-
-		pushd scripts
-			rm overlay
-		popd
-	popd
-fi
-
 echo "--- Cleanup"
 apt-get autoremove --yes
 

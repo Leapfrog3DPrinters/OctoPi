@@ -6,6 +6,13 @@
 # - no: don't perform resize
 perform_resize="home"
 
+### Configure whether to automatically make the root partition readonly
+#
+# Available options are:
+# - yes: make it readonly after resizing home
+# - no: don't make it readonly
+root_readonly="yes"
+
 ### Configure which camera to use
 #
 # Available options are:
