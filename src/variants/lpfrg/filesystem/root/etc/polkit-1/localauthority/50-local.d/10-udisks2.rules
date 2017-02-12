@@ -1,0 +1,7 @@
+// Allow udisks2 to mount devices without authentication
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.udisks2.filesystem-mount-system" ||
+         action.id == "org.freedesktop.udisks2.filesystem-mount") {
+        return polkit.Result.YES;
+    }
+});
