@@ -30,4 +30,7 @@ iwconfig wlan0 power off
 # tlsdate first run with leap of faith
 tlsdate -V -l -t -s
 
+#Suppress Kernel Messages
+dmesg --console-off
+
 exit 0

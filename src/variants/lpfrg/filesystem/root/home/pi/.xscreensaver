@@ -35,7 +35,7 @@ chooseRandomImages: False
 imageDirectory:	
 
 mode:		one
-selected:	208
+selected:	0
 
 textMode:	url
 textLiteral:	XScreenSaver

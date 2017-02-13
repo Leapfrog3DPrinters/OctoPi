@@ -42,7 +42,7 @@ chmod +x /usr/sbin/policy-rc.d
 if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
 then
     mkdir /home/pi -p
-    cp -R /etc/skel /home/pi
+    cp -R /etc/skel/. /home/pi/
     chown -R pi:pi /home/pi
 fi
 
@@ -51,6 +51,7 @@ unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
 
 chmod +x /home/pi/scripts/root_readonly
+chmod +x /home/pi/scripts/expand-homefs
 
 apt-get update
 

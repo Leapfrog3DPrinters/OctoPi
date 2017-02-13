@@ -1,5 +1,5 @@
 accessControl:
-  autologinAs: Bolt
+  autologinAs: lpfrg
   autologinLocal: true
   localNetworks:
   - 127.0.0.1/8
@@ -70,11 +70,11 @@ system:
     name: Update Gcode Render Module
 temperature:
   profiles:
-  - bed: 65
+  - bed: 70
     extruder: 230
     name: ABS
   - bed: 40
-    extruder: 215
+    extruder: 200
     name: PLA
   - bed: 50
     extruder: 240
