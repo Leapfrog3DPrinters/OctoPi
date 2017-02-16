@@ -101,7 +101,8 @@ echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
 
 echo "-- Installing (requirements for) LpfrgScreensaver"
-apt-get install --yes python-gtk2
+apt-get install --yes python-gtk2 python-yaml python-pip
+pip install requests
 
 echo "--- Cleanup"
 apt-get autoremove --yes

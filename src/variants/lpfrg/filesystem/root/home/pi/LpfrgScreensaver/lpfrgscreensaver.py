@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import division
 
 import os
 import sys
@@ -6,11 +7,25 @@ import sys
 import pygtk
 import gtk, gobject, cairo
 from gtk import gdk
+import ctypes as ct
+
+import json, yaml, requests
 
 import math
 from random import randint
+import RPi.GPIO as GPIO
+import time
 
-IMAGE_PATH = "/home/pi/LpfrgScreensaver/lpfrg.png"
+LED_PIN = 22 
+PWR_PIN = 11 # Toggles power supply
+BUTTON_PIN = 16
+
+BOUNCETIME = 1000 # minimal press interval in ms
+
+FONT_FACE = "/home/pi/LpfrgScreensaver/futura.ttf"
+IMAGE_PATH = "/home/pi/LpfrgScreensaver/bolt350.png"
+OCTOPRINT_CONFIG_PATH = "/home/pi/.octoprint/config.yaml"
+JOB_URL = "http://localhost:5000/api/job?apikey={api_key}"
 
 # the secret sauce is to get the "window id" out of $XSCREENSAVER_WINDOW
 # code comes from these two places:
@@ -19,6 +34,113 @@ IMAGE_PATH = "/home/pi/LpfrgScreensaver/lpfrg.png"
 
 #To add: http://stackoverflow.com/questions/7016509/a-way-to-animate-transition-with-python-gtk-and-cairo
 # https://cairographics.org/cookbook/animationrotation/
+
+
+
+_initialized = False
+def create_cairo_font_face_for_file (filename, faceindex=0, loadoptions=0):
+    "given the name of a font file, and optional faceindex to pass to FT_New_Face" \
+    " and loadoptions to pass to cairo_ft_font_face_create_for_ft_face, creates" \
+    " a cairo.FontFace object that may be used to render text with that font."
+    global _initialized
+    global _freetype_so
+    global _cairo_so
+    global _ft_lib
+    global _ft_destroy_key
+    global _surface
+
+    CAIRO_STATUS_SUCCESS = 0
+    FT_Err_Ok = 0
+
+    if not _initialized:
+        # find shared objects
+        _freetype_so = ct.CDLL("libfreetype.so.6")
+        _cairo_so = ct.CDLL("libcairo.so.2")
+        _cairo_so.cairo_ft_font_face_create_for_ft_face.restype = ct.c_void_p
+        _cairo_so.cairo_ft_font_face_create_for_ft_face.argtypes = [ ct.c_void_p, ct.c_int ]
+        _cairo_so.cairo_font_face_get_user_data.restype = ct.c_void_p
+        _cairo_so.cairo_font_face_set_user_data.argtypes = (ct.c_void_p, ct.c_void_p, ct.c_void_p, ct.c_void_p)
+        _cairo_so.cairo_set_font_face.argtypes = [ ct.c_void_p, ct.c_void_p ]
+        _cairo_so.cairo_font_face_status.argtypes = [ ct.c_void_p ]
+        _cairo_so.cairo_font_face_destroy.argtypes = (ct.c_void_p,)
+        _cairo_so.cairo_status.argtypes = [ ct.c_void_p ]
+        # initialize freetype
+        _ft_lib = ct.c_void_p()
+        status = _freetype_so.FT_Init_FreeType(ct.byref(_ft_lib))
+        if  status != FT_Err_Ok :
+            raise RuntimeError("Error %d initializing FreeType library." % status)
+        #end if
+
+        class PycairoContext(ct.Structure):
+            _fields_ = \
+                [
+                    ("PyObject_HEAD", ct.c_byte * object.__basicsize__),
+                    ("ctx", ct.c_void_p),
+                    ("base", ct.c_void_p),
+                ]
+        #end PycairoContext
+
+        _surface = cairo.ImageSurface(cairo.FORMAT_A8, 0, 0)
+        _ft_destroy_key = ct.c_int() # dummy address
+        _initialized = True
+    #end if
+
+    ft_face = ct.c_void_p()
+    cr_face = None
+    try :
+        # load FreeType face
+        status = _freetype_so.FT_New_Face(_ft_lib, filename.encode("utf-8"), faceindex, ct.byref(ft_face))
+        if status != FT_Err_Ok :
+            raise RuntimeError("Error %d creating FreeType font face for %s" % (status, filename))
+        #end if
+
+        # create Cairo font face for freetype face
+        cr_face = _cairo_so.cairo_ft_font_face_create_for_ft_face(ft_face, loadoptions)
+        status = _cairo_so.cairo_font_face_status(cr_face)
+        if status != CAIRO_STATUS_SUCCESS :
+            raise RuntimeError("Error %d creating cairo font face for %s" % (status, filename))
+        #end if
+        # Problem: Cairo doesn't know to call FT_Done_Face when its font_face object is
+        # destroyed, so we have to do that for it, by attaching a cleanup callback to
+        # the font_face. This only needs to be done once for each font face, while
+        # cairo_ft_font_face_create_for_ft_face will return the same font_face if called
+        # twice with the same FT Face.
+        # The following check for whether the cleanup has been attached or not is
+        # actually unnecessary in our situation, because each call to FT_New_Face
+        # will return a new FT Face, but we include it here to show how to handle the
+        # general case.
+        if _cairo_so.cairo_font_face_get_user_data(cr_face, ct.byref(_ft_destroy_key)) == None :
+            status = _cairo_so.cairo_font_face_set_user_data \
+              (
+                cr_face,
+                ct.byref(_ft_destroy_key),
+                ft_face,
+                _freetype_so.FT_Done_Face
+              )
+            if status != CAIRO_STATUS_SUCCESS :
+                raise RuntimeError("Error %d doing user_data dance for %s" % (status, filename))
+            #end if
+            ft_face = None # Cairo has stolen my reference
+        #end if
+
+        # set Cairo font face into Cairo context
+        cairo_ctx = cairo.Context(_surface)
+        cairo_t = PycairoContext.from_address(id(cairo_ctx)).ctx
+        _cairo_so.cairo_set_font_face(cairo_t, cr_face)
+        status = _cairo_so.cairo_font_face_status(cairo_t)
+        if status != CAIRO_STATUS_SUCCESS :
+            raise RuntimeError("Error %d creating cairo font face for %s" % (status, filename))
+        #end if
+
+    finally :
+        _cairo_so.cairo_font_face_destroy(cr_face)
+        _freetype_so.FT_Done_Face(ft_face)
+    #end try
+
+    # get back Cairo font face as a Python object
+    face = cairo_ctx.get_font_face()
+    return face
+#end create_cairo_font_face_for_file
 
 class Screen(gtk.DrawingArea):
     """ This class is a Drawing Area"""
@@ -46,55 +168,71 @@ class Frog(Screen):
     """This class is also a Drawing Area, coming from Screen."""
     def __init__ ( self ):
         Screen.__init__( self )
+        self.octoprint_comm = OctoPrintComm()
+        self.progress_string = "Idle"
+        self.counter = 0
     
     def size(self, widget, event):
         self.screen_w, self.screen_h = self.window.get_size()
 
-        self.delta = 5
-
         self.image = cairo.ImageSurface.create_from_png(IMAGE_PATH);
+        self.font_face = create_cairo_font_face_for_file(FONT_FACE, 0)
         
+        self.counter = 0
+        self.fade_duration = 350
+
         self.image_w = self.image.get_width()
         self.image_h = self.image.get_height()
 
-        self.image_x = randint(0, self.screen_w - self.image_w)
+        self.image_x = (self.screen_w - self.image_w) / 2
         self.image_y = randint(0, self.screen_h - self.image_h)
 
-        self.image_ang = randint(0, 359)
+        self.text_margin = 20
+
+        self.progress_string = self.octoprint_comm.get_progress_string()
        
     def draw( self ):
         ## A shortcut
         self.cr.set_source_rgba(0.0, 0.0, 0.0, 1)
         self.cr.rectangle(0, 0, self.screen_w, self.screen_h)
         self.cr.fill()
-        self.drawFrog(self.cr)
 
-        self.image_x += self.delta * math.cos(math.radians(self.image_ang))
-        self.image_y += self.delta * math.sin(math.radians(self.image_ang))
+        if self.counter < self.fade_duration:
+            self.drawProgress(self.cr, self.counter / self.fade_duration)
+            self.drawFrog(self.cr, self.counter / self.fade_duration)
+            
+        
+        self.counter += 1
+
+        if self.counter >= self.fade_duration:
+            self.progress_string = self.octoprint_comm.get_progress_string()
+            self.image_y = randint(0, self.screen_h - self.image_h)
+            self.counter = 0
        
-        self.norm_ang = 0
-        if self.image_x + self.image_w >= self.screen_w:
-            # right bounce
-            self.norm_ang = 180
-            self.image_ang = 2 * self.norm_ang - 180 - self.image_ang
-        elif self.image_x <= 0:
-            # left bounce
-            self.norm_ang = 0
-            self.image_ang = 2 * self.norm_ang - 180 - self.image_ang
-        elif self.image_y + self.image_h >= self.screen_h:
-            # Bottom bounce
-            self.norm_ang = 90
-            self.image_ang = 2 * self.norm_ang - 180 - self.image_ang
-        elif self.image_y <= 0:
-            # Top bounce
-            self.norm_ang = 270
-            self.image_ang = 2 * self.norm_ang - 180 - self.image_ang
+    def drawProgress(self, cr, progress):
+        cr.set_source_rgba(1, 1, 1, self.getAlpha(progress))
+        cr.set_font_face(self.font_face)
+        cr.set_font_size(45)
+        
+        (x, y, width, height, dx, dy) = cr.text_extents(self.progress_string)
+        cr.move_to(self.image_x + (self.image_w - width)/2, self.image_y + self.image_h + height + self.text_margin)    
+        cr.show_text(self.progress_string)
 
-    def drawFrog ( self, cr ):
+
+    def drawFrog ( self, cr, progress):
         cr.set_source_surface(self.image, self.image_x, self.image_y)
         cr.rectangle( self.image_x, self.image_y, self.image_w, self.image_h )
         cr.clip()
-        cr.paint()
+        alpha = self.getAlpha(progress)
+        cr.paint_with_alpha(alpha)
+
+    def getAlpha(self, progress):
+        if progress <= 0.33:
+            return 3*progress
+        elif progress <= 0.67:
+            return 1
+        else:
+            return 3 * (1-progress)
 
 class ScreenSaverWindow(gtk.Window):
 
@@ -133,6 +271,45 @@ class ScreenSaverWindow(gtk.Window):
         if self.window != None:
             self.set_flags(self.flags() | gtk.REALIZED)
 
+class OctoPrintComm():
+    def __init__(self):
+        self.api_key = self._read_api_key()
+        self.job_url = JOB_URL.format(api_key=self.api_key)
+
+    # Public methods
+    def get_progress_string(self):
+        job = self._get_job_data()
+
+        if job and "state" in job and "progress" in job:
+            if job["state"] == "Operational" and job["progress"]["completion"] == 100:
+                return "Print finished"
+            elif job["state"] == "Printing":
+                return "{0:.0f}%".format(job["progress"]["completion"])
+        
+        return "Idle"
+
+
+    # Private methods
+    def _read_api_key(self):
+        if os.path.exists(OCTOPRINT_CONFIG_PATH):
+            with open(OCTOPRINT_CONFIG_PATH, "rb") as fp:
+                data = yaml.safe_load(fp)
+            return data["api"]["key"]
+
+    def _get_job_data(self):
+        try:
+            response = requests.get(self.job_url)
+        except:
+            return None
+        
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except:
+                return None
+       
+        
+
 window = ScreenSaverWindow()
 window.set_title('Floaters')
 window.set_default_size(600, 1024)
@@ -145,5 +322,13 @@ widget = Frog()
 widget.show()
 window.add(widget)
 window.present()
+
+def shutdown_button_press(c):
+    import subprocess
+    subprocess.call("xscreensaver-command -deactivate".split())
+    
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(BUTTON_PIN, GPIO.IN)
+GPIO.add_event_detect(BUTTON_PIN, GPIO.RISING, callback=shutdown_button_press, bouncetime=BOUNCETIME)
 
 gtk.main()

@@ -33,4 +33,8 @@ tlsdate -V -l -t -s
 #Suppress Kernel Messages
 dmesg --console-off
 
+# Set default display variable
+export DISPLAY=:0
+export XAUTHORITY=/home/pi/.Xauthority
+
 exit 0

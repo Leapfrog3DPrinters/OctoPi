@@ -1,0 +1,51 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          factoryreset
+# Required-Start:    $local_fs
+# Required-Stop:
+# Default-Start:     3
+# Default-Stop:
+# Short-Description: Resets the Leapfrog software to factory defaults by flashing the root partition with the recovery partition
+# Description:
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+recoverypart=/dev/mmcblk0p4
+targetpart=/dev/mmcblk0p2
+skipfile=/boot/nofactoryreset
+
+do_start () {
+
+  if [ -f "$skipfile" ]; then
+      echo "$skipfile found. Skipping factoryreset." >> /var/log/factoryreset
+      exit 1;
+  fi
+
+	# Show image overlay
+  fbi -noverbose -once -T 1 /usr/share/factoryreset/lpfrg-factoryreset-portrait.png&
+
+  # Start copying old 
+  dd if="$recoverypart" of="$targetpart" bs=64K conv=noerror,sync
+
+	# Reset boot partition and reboot	
+	sed -i 's@root=/dev/mmcblk0p3@root=/dev/mmcblk0p2@' /boot/cmdline.txt
+	reboot
+}
+
+case "$1" in
+  start|"")
+        do_start
+        ;;
+  restart|reload|force-reload)
+        echo "Error: argument '$1' not supported" >&2
+        exit 3
+        ;;
+  stop)
+        # No-op
+        ;;
+  *)
+        echo "Usage: change_password [start|stop]" >&2
+        exit 3
+        ;;
+esac

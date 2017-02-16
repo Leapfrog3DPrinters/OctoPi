@@ -115,8 +115,6 @@ function mount_image() {
   root_partition=$2
   mount_path=$3
   home_partition=$4
-  echo "burr"
-  echo $2
 
   # dump the partition table, locate boot partition and root partition
   boot_partition=1
@@ -141,6 +139,19 @@ function mount_image() {
     echo "Mounting home partition at offset $home_offset"
     sudo mount -o loop,offset=$home_offset $image_path $mount_path/home
   fi
+}
+
+function include_recovery_partition()
+{
+  # Copies from a seperate RPi image a given partition into a partition of the main image
+  image_path=$1 
+  target_partition=$2
+  recovery_image_path=$3
+  root_partition=$4
+  
+  target_offset=$(sfdisk -d $image_path | grep "$image_path$target_partition" | awk '{print $4-0}')
+
+  dd if="$recovery_image_path" of="$image_path" bs=512 seek=target_offset conv=notrunc,noerror
 }
 
 function unmount_image() {
@@ -248,7 +259,7 @@ FDISK
 function add_ext() {
   # call like this: add_ext /path/to/image partition size
   #
-  # will enlarge partition number <partition> on /path/to/image by <size> MB
+  # will add partition number <partition> on /path/to/image by <size> MB
   image=$1
   partition=$2
   size=$3
@@ -280,6 +291,75 @@ FDISK
 
   trap - EXIT
   echo "Add parition $partition of $image with +$size MB"
+}
+
+function add_extended_ext() {
+  # call like this: add_extended_ext /path/to/image partition size
+  
+  image=$1
+  partition=$2
+  size=$3
+
+  # Add a little bit of extra space (8MB) for partitioning info
+  size=$(($size + 8))
+
+  prevpartition=$(expr $2 - 1)
+  echo "Adding $size MB to partition $partition of $image"
+  prevstart=$(sfdisk -d $image | grep "$image$prevpartition" | awk '{print $4-0}')
+  prevsize=$(sfdisk -d $image | grep "$image$prevpartition" | awk '{print $6-0}')
+
+  offset=$(($prevstart+$prevsize))
+  
+  dd if=/dev/zero bs=1M count=$size >> $image
+  fdisk $image <<FDISK
+p
+n
+e
+$partition
+$offset
+
+p
+w
+FDISK
+  
+  echo "Extended partition added"
+}
+
+function add_logical_ext() {
+  # call like this: add_logical_ext /path/to/image partition size
+  
+  image=$1
+  partition=$2
+  size=$3
+
+  echo "Adding $size to partition $partition of $image"
+  
+
+  #offset=$((($prevstart+$prevsize)))
+  #Spacer already added by extended part
+  #dd if=/dev/zero bs=1M count=$size >> $image
+  fdisk $image <<FDISK
+p
+n
+l
+
++${size}M
+p
+w
+FDISK
+  # Find out  where we just added a partition
+  offset=$(sfdisk -d $image | grep "$image$partition" | awk '{print $4-0}')
+
+  offsetb=$(($offset*512))
+  LODEV=$(losetup -f --show -o $offsetb $image)
+  trap 'losetup -d $LODEV' EXIT
+  mkfs.ext4 $LODEV
+  e2fsck -fy $LODEV
+  resize2fs -p $LODEV
+  losetup -d $LODEV
+
+  trap - EXIT
+  echo "Logical partition added"
 }
 
 function shrink_ext() {
@@ -336,6 +416,14 @@ FDISK
   resize2fs -p $LODEV
   losetup -d $LODEV
   trap - EXIT
+}
+
+function find_root_size()
+{
+  image=$1
+  partition=$2
+
+  echo $(sfdisk -d $image | grep "$image$partition" | awk '{print $6-0}')
 }
 
 function minimize_ext() {
