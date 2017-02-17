@@ -51,7 +51,7 @@ fi
 
 # if set will create 2 additional partitions: a copy of root and an install of dietPi to recover root
 [ -n "$OCTOPI_IMAGE_RECOVERY" ] || OCTOPI_IMAGE_RECOVERY=yes
-[ -n "$OCTOPI_IMAGE_RECOVERYPARTITION" ] || OCTOPI_IMAGE_RECOVERYPARTITION=600
+[ -n "$OCTOPI_IMAGE_RECOVERYPARTITION" ] || OCTOPI_IMAGE_RECOVERYPARTITION=700
 [ -n "$OCTOPI_RECOVERY_CHROOT_SCRIPT_PATH" ] || OCTOPI_RECOVERY_CHROOT_SCRIPT_PATH=$OCTOPI_SCRIPT_PATH/chroot_script_recovery
 [ -n "$OCTOPI_RECOVERY_IMG" ] || OCTOPI_RECOVERY_IMG=`ls -t $OCTOPI_IMAGE_PATH/*dietpi*.img | head -n 1`
 

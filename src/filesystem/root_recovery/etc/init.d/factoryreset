@@ -11,7 +11,8 @@
 
 . /lib/lsb/init-functions
 
-recoverypart=/dev/mmcblk0p4
+backuppart=/dev/mmcblk0p5
+recoverypart=/dev/mmcblk0p6
 targetpart=/dev/mmcblk0p2
 skipfile=/boot/nofactoryreset
 
@@ -26,10 +27,10 @@ do_start () {
   fbi -noverbose -once -T 1 /usr/share/factoryreset/lpfrg-factoryreset-portrait.png&
 
   # Start copying old 
-  dd if="$recoverypart" of="$targetpart" bs=64K conv=noerror,sync
+  dd if="$backuppart" of="$targetpart" bs=64K conv=noerror,sync
 
 	# Reset boot partition and reboot	
-	sed -i 's@root=/dev/mmcblk0p3@root=/dev/mmcblk0p2@' /boot/cmdline.txt
+	sed -i 's@root=$recoverypart@root=$targetpart@' /boot/cmdline.txt
 	reboot
 }
 

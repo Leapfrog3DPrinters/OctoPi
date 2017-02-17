@@ -149,9 +149,21 @@ function include_recovery_partition()
   recovery_image_path=$3
   root_partition=$4
   
+  source_offset=$(sfdisk -d $recovery_image_path | grep "$recovery_image_path$root_partition" | awk '{print $4-0}')
+  source_size=$(sfdisk -d $recovery_image_path | grep "$recovery_image_path$root_partition" | awk '{print $6-0}')
+
   target_offset=$(sfdisk -d $image_path | grep "$image_path$target_partition" | awk '{print $4-0}')
 
-  dd if="$recovery_image_path" of="$image_path" bs=512 seek=target_offset conv=notrunc,noerror
+  echo "--- Including recovery partition from $source_offset to $target_offset"
+  dd if="$recovery_image_path" of="$image_path" bs=512 skip="$source_offset" count="$source_size" seek="$target_offset" conv=notrunc,noerror
+
+  target_offsetb=$(($target_offset * 512))
+  LODEV=$(losetup -f --show -o $target_offsetb $image_path)
+  trap 'losetup -d $LODEV' EXIT
+
+  e2fsck -fy $LODEV
+  resize2fs -p $LODEV
+  losetup -d $LODEV
 }
 
 function unmount_image() {

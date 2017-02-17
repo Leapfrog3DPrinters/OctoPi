@@ -6,7 +6,7 @@ import subprocess
 import pygtk
 import gtk
 
-COMMAND = r"sudo sed -i 's@root=/dev/mmcblk0p2@root=/dev/mmcblk0p3@' /boot/cmdline.txt && sudo reboot"
+COMMAND = r"sudo sed -i 's@root=/dev/mmcblk0p2@root=/dev/mmcblk0p6@' /boot/cmdline.txt && sudo reboot"
 
 BUTTON_PIN = 16
 
