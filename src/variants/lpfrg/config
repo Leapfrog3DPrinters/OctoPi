@@ -5,7 +5,7 @@ OCTOPI_INCLUDE_OCTOPIPANEL=no
 OCTOPI_INCLUDE_WIRINGPI=no
 OCTOPI_INCLUDE_CURAENGINE=no
 OCTOPI_IMAGE_ENLARGEROOT=900 #TODO: Find smaller values that will do the job
-OCTOPI_IMAGE_HOMEPARTITION=400 #TODO: Find smaller values that will do the job
+OCTOPI_IMAGE_HOMEPARTITION_SIZE=400 #TODO: Find smaller values that will do the job
 # Skip resize root for now (may give issues with home partition)
 OCTOPI_IMAGE_RESIZEROOT=
 OCTOPI_ENABLE_BOOT_NETWORKSETTINGS=no

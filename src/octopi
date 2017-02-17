@@ -49,47 +49,50 @@ pushd $OCTOPI_WORKSPACE
   if [ "$OCTOPI_IMAGE_RECOVERY" == "yes" ]
   then
     recovery_partition=$(($OCTOPI_ROOT_PARTITION + 1))
-    backup_size_s=$(find_root_size $OCTOPI_IMG_PATH 2)
-    backup_size=$(($backup_size_s * 512 / 1024 / 1024)) # Sectors to MBytes
-    recovery_size=$OCTOPI_IMAGE_RECOVERYPARTITION
+    backup_size=$OCTOPI_IMAGE_BACKUPPARTITION_SIZE
+    recovery_size=$OCTOPI_IMAGE_RECOVERYPARTITION_SIZE
 
-    if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]; then
+    backup_partition_num=5
+    recovery_partition_num=6
+
+    if [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]; then
        #Recovery partitions with home partition
-      home_size=$OCTOPI_IMAGE_HOMEPARTITION
+      home_size=$OCTOPI_IMAGE_HOMEPARTITION_SIZE
       total_size=$(($backup_size + $recovery_size + $home_size))
+
+      home_partition_num=7
 
       add_extended_ext $OCTOPI_IMG_PATH $recovery_partition $total_size
 
-      add_logical_ext $OCTOPI_IMG_PATH 5 $backup_size
-      add_logical_ext $OCTOPI_IMG_PATH 6 $recovery_size
-      add_logical_ext $OCTOPI_IMG_PATH 7 $home_size
+      add_logical_ext $OCTOPI_IMG_PATH $backup_partition_num $backup_size
+      add_logical_ext $OCTOPI_IMG_PATH $recovery_partition_num $recovery_size
+      add_logical_ext $OCTOPI_IMG_PATH $home_partition_num $home_size
 
-      include_recovery_partition $OCTOPI_IMG_PATH 6 $OCTOPI_RECOVERY_IMG 2
+      include_recovery_partition $OCTOPI_IMG_PATH $recovery_partition_num $OCTOPI_RECOVERY_IMG $OCTOPI_RECOVERY_ROOT_PARTITION
 
-      mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH 7
+      mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH $home_partition_num
 
     else
-      #Recovery partitions without home partition
-      home_size=$OCTOPI_IMAGE_HOMEPARTITION
+
       total_size=$(($backup_size + $recovery_size))
 
       add_extended_ext $OCTOPI_IMG_PATH $recovery_partition $total_size
 
-      add_logical_ext $OCTOPI_IMG_PATH 5 $backup_size
-      add_logical_ext $OCTOPI_IMG_PATH 6 $recovery_size
+      add_logical_ext $OCTOPI_IMG_PATH $backup_partition_num $backup_size
+      add_logical_ext $OCTOPI_IMG_PATH $recovery_partition_num $recovery_size
 
       mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH
     fi
 
-  elif [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]; then
+  elif [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]; then
     # Find home partition number
-    home_partition=$(($OCTOPI_ROOT_PARTITION + 1))
+    home_partition_num=$(($OCTOPI_ROOT_PARTITION + 1))
 
     # Add it to the image
-    add_ext $OCTOPI_IMG_PATH $home_partition $OCTOPI_IMAGE_HOMEPARTITION
+    add_ext $OCTOPI_IMG_PATH $home_partition_num $OCTOPI_IMAGE_HOMEPARTITION_SIZE
 
     # mount root, home and boot partition
-    mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH $home_partition
+    mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH $home_partition_num
 
   else
     # mount root and boot partition
@@ -112,9 +115,9 @@ pushd $OCTOPI_WORKSPACE
     #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
     #Edit fstab to account for the new home partition
-    if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
+    if [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]
     then
-      sed -i "3 a /dev/mmcblk0p3 /home ext4 rw,user,auto,exec 0 2" etc/fstab
+      sed -i "3 a /dev/mmcblk0p$home_partition_num /home ext4 rw,user,auto,exec 0 2" etc/fstab
     fi
 
     # if an additional pre-script is defined, execute that now
@@ -170,6 +173,13 @@ pushd $OCTOPI_WORKSPACE
     popd
     unmount_image $OCTOPI_MOUNT_PATH
     chmod 777 $OCTOPI_IMG_PATH
+
+    echo "--- Mounting backup partition"
+    mount_partition $OCTOPI_IMG_PATH $backup_partition_num $OCTOPI_MOUNT_PATH
+    echo "--- Creating backups"
+    backup_partition $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION "$OCTOPI_MOUNT_PATH/root.img.gz"
+    backup_partition $OCTOPI_IMG_PATH $home_partition_num "$OCTOPI_MOUNT_PATH/home.img.gz"
+    unmount_partition $OCTOPI_MOUNT_PATH
 
   elif [ -n "$OCTOPI_IMAGE_RESIZEROOT" ]
     then

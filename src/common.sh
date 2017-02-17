@@ -110,6 +110,18 @@ function unpack() {
   fi
 }
 
+function backup_partition()
+{
+  image_path=$1
+  partition=$2
+  target_path=$3
+
+  offset=$(sfdisk -d $image_path | grep "$image_path$partition" | awk '{print $4-0}')
+  size=$(sfdisk -d $image_path | grep "$image_path$partition" | awk '{print $6-0}')
+
+  dd if=$image_path skip=$offset count=$size conv=sync,noerror bs=512 | gzip -c  > $target_path
+}
+
 function mount_image() {
   image_path=$1
   root_partition=$2
@@ -141,6 +153,27 @@ function mount_image() {
   fi
 }
 
+function mount_partition() {
+  image_path=$1
+  partition=$2
+  mount_path=$3
+
+  fdisk_output=$(sfdisk -d $image_path)
+  offset=$(($(echo "$fdisk_output" | grep "$image_path$partition" | awk '{print $4-0}') * 512))
+
+  echo "Mounting image $image_path on $mount_path, offset for partition $partition is $offset"
+
+  # mount partition
+  mkdir -p $mount_path
+  sudo mount -o loop,offset=$offset $image_path $mount_path/
+}
+
+function unmount_partition()
+{
+  mount_path=$1
+  sudo umount $mount_path
+}
+
 function include_recovery_partition()
 {
   # Copies from a seperate RPi image a given partition into a partition of the main image
@@ -153,12 +186,14 @@ function include_recovery_partition()
   source_size=$(sfdisk -d $recovery_image_path | grep "$recovery_image_path$root_partition" | awk '{print $6-0}')
 
   target_offset=$(sfdisk -d $image_path | grep "$image_path$target_partition" | awk '{print $4-0}')
+  target_size=$(sfdisk -d $image_path | grep "$image_path$target_partition" | awk '{print $6-0}')
 
   echo "--- Including recovery partition from $source_offset to $target_offset"
   dd if="$recovery_image_path" of="$image_path" bs=512 skip="$source_offset" count="$source_size" seek="$target_offset" conv=notrunc,noerror
 
   target_offsetb=$(($target_offset * 512))
-  LODEV=$(losetup -f --show -o $target_offsetb $image_path)
+  target_sizeb=$(($target_size * 512))
+  LODEV=$(losetup -f --show -o $target_offsetb --sizelimit $target_sizeb $image_path)
   trap 'losetup -d $LODEV' EXIT
 
   e2fsck -fy $LODEV
@@ -361,9 +396,11 @@ w
 FDISK
   # Find out  where we just added a partition
   offset=$(sfdisk -d $image | grep "$image$partition" | awk '{print $4-0}')
+  newsize=$(sfdisk -d $image | grep "$image$partition" | awk '{print $6-0}')
 
   offsetb=$(($offset*512))
-  LODEV=$(losetup -f --show -o $offsetb $image)
+  newsizeb=$(($newsize*512))
+  LODEV=$(losetup -f --show -o $offsetb --sizelimit $newsizeb $image)
   trap 'losetup -d $LODEV' EXIT
   mkfs.ext4 $LODEV
   e2fsck -fy $LODEV

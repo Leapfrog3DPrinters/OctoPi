@@ -12,8 +12,14 @@
 . /lib/lsb/init-functions
 
 backuppart=/dev/mmcblk0p5
+mountdir="/backup"
+rootbackup="root.img.gz"
+homebackup="home.img.gz"
+
 recoverypart=/dev/mmcblk0p6
-targetpart=/dev/mmcblk0p2
+rootpart=/dev/mmcblk0p2
+homepart=/dev/mmcblk0p7
+
 skipfile=/boot/nofactoryreset
 
 do_start () {
@@ -26,11 +32,19 @@ do_start () {
 	# Show image overlay
   fbi -noverbose -once -T 1 /usr/share/factoryreset/lpfrg-factoryreset-portrait.png&
 
+  mkdir $mountdir -p
+  mount $backuppart $mountdir
+
   # Start copying old 
-  dd if="$backuppart" of="$targetpart" bs=64K conv=noerror,sync
+  echo "Restoring root partition" >> /var/log/factoryreset
+  gunzip -c "$mountdir/$rootbackup" | dd of="$rootpart" >> /var/log/factoryreset
+
+  echo "Restoring home partition" >> /var/log/factoryreset
+  gunzip -c "$mountdir/$homebackup" | dd of="$homepart" >> /var/log/factoryreset
 
 	# Reset boot partition and reboot	
-	sed -i 's@root=$recoverypart@root=$targetpart@' /boot/cmdline.txt
+	sed -i "s@root=$recoverypart@root=$rootpart@" /boot/cmdline.txt
+
 	reboot
 }
 
