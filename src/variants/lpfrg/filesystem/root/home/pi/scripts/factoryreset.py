@@ -28,6 +28,7 @@ def confirm_factoryreset():
 	confirmation_open = True
 	message = gtk.MessageDialog(type=gtk.MESSAGE_QUESTION, buttons=gtk.BUTTONS_YES_NO)
 	message.set_markup("You are about to reset your printer to factory defaults. This will erase all your data. Are you sure you want to continue? This action cannot be undone.")
+	message.set_keep_above(True)
 	response = message.run()
 	confirmation_open = False
 	message.destroy()

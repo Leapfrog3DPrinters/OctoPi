@@ -41,7 +41,7 @@ chmod +x /usr/sbin/policy-rc.d
 # Restore home folder if we made a new partition
 if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
 then
-    mkdir /home/pi -p
+    mkdir -p /home/pi
     cp -R /etc/skel/. /home/pi/
     chown -R pi:pi /home/pi
 fi

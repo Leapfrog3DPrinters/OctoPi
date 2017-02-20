@@ -25,6 +25,12 @@ echo "--- Installing factoryreset"
 chmod +x /etc/init.d/factoryreset
 update-rc.d factoryreset defaults
 
+echo "--- Update pi password"
+if [ -n $OCTOPI_PI_PASSWORD ]
+then
+	echo "pi:$OCTOPI_PI_PASSWORD" | chpasswd
+fi
+
 #cleanup
 apt-get clean
 apt-get autoremove -y

@@ -41,7 +41,8 @@ do_expand_homefs() {
   [ "$PART_START" ] || return 1
   # Return value will likely be error for fdisk as it fails to reload the
   # partition table because the home fs is mounted
-  fdisk /dev/mmcblk0 <<EOF
+  if [ "$PART_NUM" -lt 5 ]; then
+    fdisk /dev/mmcblk0 <<EOF
 p
 d
 $PART_NUM
@@ -53,6 +54,21 @@ $PART_START
 p
 w
 EOF
+  else
+    fdisk /dev/mmcblk0 <<EOF
+p
+d
+$PART_NUM
+n
+l
+$PART_START
+
+p
+w
+EOF
+  fi
+
+
   ASK_TO_REBOOT=1
 
   # now set up an init.d script

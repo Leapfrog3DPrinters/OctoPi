@@ -22,16 +22,27 @@ do_start () {
 
   if [ "$root_readonly" = "yes" ]
   then
-    /home/pi/scripts/root_readonly >> /var/log/prepare_rootreadonly
-    /usr/sbin/update-rc.d prepare_rootreadonly remove >> /var/log/prepare_rootreadonly
+    if [ $(cat /boot/cmdline.txt | grep "boot=overlay" -q) ]; then
+      log_success_msg "Root already readonly, doing nothing..."
+      exit 0
+    else
+      /home/pi/scripts/root_readonly >> /var/log/prepare_rootreadonly
+      #/usr/sbin/update-rc.d prepare_rootreadonly remove >> /var/log/prepare_rootreadonly
 
-    log_success_msg "Root made readonly, rebooting to apply..."
-    /sbin/reboot
+      log_success_msg "Root made readonly, rebooting to apply..."
+      /sbin/reboot
 
-    exit 0
+      exit 0
+    fi
   else
+    if [ $(cat /boot/cmdline.txt | grep "boot=overlay" -q) ]; then
+      sed -i "s/boot=overlay//" /boot/cmdline.txt
+      log_success_msg "Root made writable"
+      exit 0
+    else
       log_failure_msg "Root readonly disabled"
-      exit 1
+      exit 0
+    fi
   fi
 
 

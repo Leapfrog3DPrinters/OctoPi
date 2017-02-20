@@ -129,6 +129,13 @@ pushd $OCTOPI_WORKSPACE
       sed -i "3 a /dev/mmcblk0p$home_partition_num /home ext4 rw,user,auto,exec 0 2" etc/fstab
     fi
 
+    # Prevent automount of backup and recovery partitions
+    if [ "$OCTOPI_IMAGE_RECOVERY" == "yes" ]
+    then
+      sed -i "4 a /dev/mmcblk0p$backup_partition_num /backups ext4 uid=0,owner,noauto,ro 0 2" etc/fstab
+      sed -i "5 a /dev/mmcblk0p$recovery_partition_num /recoveryroot ext4 uid=0,owner,noauto,ro 0 2" etc/fstab
+    fi
+
     # if an additional pre-script is defined, execute that now
     if [ -n "$OCTOPI_PRESCRIPT" ] && [ -f $OCTOPI_PRESCRIPT/chroot_script ]; then
       echo "Injecting environment pre script from $OCTOPI_PRESCRIPT..."
