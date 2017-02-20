@@ -15,6 +15,7 @@ backuppart=/dev/mmcblk0p5
 mountdir="/backup"
 rootbackup="root.img.gz"
 homebackup="home.img.gz"
+bootbackup="bootbackup"
 
 recoverypart=/dev/mmcblk0p6
 rootpart=/dev/mmcblk0p2
@@ -32,8 +33,8 @@ do_start () {
 	# Show image overlay
   fbi -noverbose -once -T 1 /usr/share/factoryreset/lpfrg-factoryreset-portrait.png&
 
-  mkdir $mountdir -p
-  mount $backuppart $mountdir
+  mkdir -p $mountdir
+  mount -o ro $backuppart $mountdir
 
   # Start copying old 
   echo "Restoring root partition" >> /var/log/factoryreset
@@ -42,9 +43,15 @@ do_start () {
   echo "Restoring home partition" >> /var/log/factoryreset
   gunzip -c "$mountdir/$homebackup" | dd of="$homepart" >> /var/log/factoryreset
 
+  # Reset boot folder
+  echo "Restoring boot partition" >> /var/log/factoryreset
+  cp -rpf $mountdir/$bootbackup/. /boot/ >> /var/log/factoryreset
+
 	# Reset boot partition and reboot	
+  echo "Resetting cmdline" >> /var/log/factoryreset
 	sed -i "s@root=$recoverypart@root=$rootpart@" /boot/cmdline.txt
 
+  echo "Rebooting" >> /var/log/factoryreset
 	reboot
 }
 

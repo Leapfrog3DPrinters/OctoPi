@@ -10,20 +10,21 @@ export LC_ALL=C
 source /common.sh
 install_cleanup_trap
 
-# Keeping it offline for now
-
-#apt-get update
+apt-get update
 
 echo "--- Copying additional LPFRG files"
 unpack /filesystem/root_recovery /
 
-#echo "--- Installing OpenSSH"
-#apt-get install --yes openssh-server
+echo "--- Installing FBI"
+apt-get install --yes fbi
+
+echo "--- Installing OpenSSH"
+apt-get install --yes openssh-server
 
 echo "--- Installing factoryreset"
 chmod +x /etc/init.d/factoryreset
 update-rc.d factoryreset defaults
 
 #cleanup
-#apt-get clean
-#apt-get autoremove -y
+apt-get clean
+apt-get autoremove -y

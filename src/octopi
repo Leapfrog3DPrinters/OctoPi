@@ -40,6 +40,13 @@ pushd $OCTOPI_WORKSPACE
   OCTOPI_IMG_PATH=`ls | grep '.img\|.raw' | head -n 1`
   export OCTOPI_BUILDBASE=$(basename $OCTOPI_IMG_PATH)
 
+  if [ "$OCTOPI_IMAGE_RECOVERY" == "yes" ]
+  then
+    # Make a copy of the raspbian image, to be included on the recovery partition 
+    OCTOPI_RECOVERY_IMG="${OCTOPI_BUILDBASE%.*}_recovery.img"
+    cp -f $OCTOPI_IMG_PATH $OCTOPI_RECOVERY_IMG
+  fi
+
   if [ -n "$OCTOPI_IMAGE_ENLARGEROOT" ]
   then
     # make our image a bit larger so we don't run into size problems...
@@ -69,6 +76,8 @@ pushd $OCTOPI_WORKSPACE
       add_logical_ext $OCTOPI_IMG_PATH $home_partition_num $home_size
 
       include_recovery_partition $OCTOPI_IMG_PATH $recovery_partition_num $OCTOPI_RECOVERY_IMG $OCTOPI_RECOVERY_ROOT_PARTITION
+
+      rm $OCTOPI_RECOVERY_IMG
 
       mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH $home_partition_num
 
@@ -158,14 +167,18 @@ pushd $OCTOPI_WORKSPACE
   if [ "$OCTOPI_IMAGE_RECOVERY" == "yes" ]
   then
     echo "--- Mounting recovery partition"
-    #TODO: Backup root and home partitions
-    mkdir -p $OCTOPI_MOUNT_PATH/boot
-    mount_image $OCTOPI_IMG_PATH 6 $OCTOPI_MOUNT_PATH
-    pushd $OCTOPI_MOUNT_PATH
-      # Keeping it offline for now
-      #echo "--- Enabling DietPi internet connection"
-      #cp -f $OCTOPI_SCRIPT_PATH/filesystem/root_recovery/etc/network/interfaces etc/network/interfaces
+    mkdir -p "$OCTOPI_MOUNT_PATH/boot"
+    mkdir -p "bootbackup"
 
+    mount_image $OCTOPI_IMG_PATH $recovery_partition_num $OCTOPI_MOUNT_PATH
+
+    # We already have access to the boot partition here, so lets leverage that to make a backup of the important files
+    cp -f "$OCTOPI_MOUNT_PATH/boot/config.txt" "bootbackup/config.txt"
+    cp -f "$OCTOPI_MOUNT_PATH/boot/octopi.txt" "bootbackup/octopi.txt"
+    cp -f "$OCTOPI_MOUNT_PATH/boot/lpfrgpi.json" "bootbackup/lpfrgpi.json" # This is actually lpfrg variant stuff. Should move it there some day
+
+    
+    pushd $OCTOPI_MOUNT_PATH
       echo "--- Executing recovery partition chroot script"
       fixLd
       execute_chroot_script $OCTOPI_SCRIPT_PATH $OCTOPI_RECOVERY_CHROOT_SCRIPT_PATH
@@ -176,9 +189,12 @@ pushd $OCTOPI_WORKSPACE
 
     echo "--- Mounting backup partition"
     mount_partition $OCTOPI_IMG_PATH $backup_partition_num $OCTOPI_MOUNT_PATH
+
     echo "--- Creating backups"
     backup_partition $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION "$OCTOPI_MOUNT_PATH/root.img.gz"
     backup_partition $OCTOPI_IMG_PATH $home_partition_num "$OCTOPI_MOUNT_PATH/home.img.gz"
+    mv "bootbackup" "$OCTOPI_MOUNT_PATH/bootbackup"
+
     unmount_partition $OCTOPI_MOUNT_PATH
 
   elif [ -n "$OCTOPI_IMAGE_RESIZEROOT" ]
