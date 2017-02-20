@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -x
 set -e
-# Helper script that runs in a DietPi chroot to create the recovery environment
-# Written by Erik Heidstra <ErikHeidstra@live.nl>
-# GPL V3
+# Helper script that runs in a chroot to create the recovery environment
+# Author: Erik Heidstra <ErikHeidstra@live.nl>
 
 export LC_ALL=C
 
@@ -18,11 +17,16 @@ unpack /filesystem/root_recovery /
 echo "--- Installing FBI"
 apt-get install --yes fbi
 
+echo "--- Installing ImageMagick"
+apt-get install --yes imagemagick
+
 echo "--- Installing OpenSSH"
 apt-get install --yes openssh-server
 
 echo "--- Installing factoryreset"
 chmod +x /etc/init.d/factoryreset
+chmod +x /usr/bin/factoryreset
+chmod +x /usr/bin/factoryresetmonitor
 update-rc.d factoryreset defaults
 
 echo "--- Update pi password"
@@ -30,6 +34,9 @@ if [ -n $OCTOPI_PI_PASSWORD ]
 then
 	echo "pi:$OCTOPI_PI_PASSWORD" | chpasswd
 fi
+
+echo "--- Setting up to boot to desktop"
+systemctl set-default graphical.target
 
 #cleanup
 apt-get clean

@@ -1,0 +1,71 @@
+#!/bin/sh
+# Author: Erik Heidstra <ErikHeidstra@live.nl>
+# Monitors the factory reset process, by polling dd
+# A PNG image is pushed to the framebuffer that displays the current status
+
+# Backup files
+mountdir="/backup"
+rootbackup="root.img.gz"
+homebackup="home.img.gz"
+
+# Layout
+progressimg="/usr/share/factoryreset/lpfrg-factoryreset-portrait.png"
+outputimg="/usr/share/factoryreset/progress.png"
+fontfile="/usr/share/factoryreset/futura.ttf"
+
+# Files indicating the status of the factory reset procedure
+statusfile="/var/run/factoryresetstatus"
+stepfile="/var/run/factoryresetstep"
+
+# Monitoring interval in seconds
+interval=5
+
+# Read the uncompressed size of the backupimages
+rootsize=$(gzip -l "$mountdir/$rootbackup" | tail -1 | awk '{print $2-0}')
+homesize=$(gzip -l "$mountdir/$homebackup" | tail -1 | awk '{print $2-0}')
+
+# Begin the monitoring loop
+while true; do
+
+    # Reset progress string
+    progressstr=""
+
+    # Read the current step of the procedure
+    step=$(<$stepfile)
+
+    # Find dd process
+    pid=$(pgrep ^dd)
+
+    if [ -n "$pid" ]; then
+      # Ask for an update (stored in $statusfile)
+      kill -USR1 $pid
+
+      # Read last line of statusfile
+      status=$(tail -1 "$statusfile" | awk '{print $1-0}')
+
+      # Make a nice string representation of the status
+      if [ step == "root" ]; then
+        # First 50%
+        progress=$(($status * 50 / $rootsize))
+        progressstr="${progress}%"
+      elif [ step == "home" ]; then
+        # Second 50%
+        progress=$(($status * 50 / $homesize + 50))
+        progressstr="${progress}%"
+      fi
+    else
+      if [ step == "boot" ]; then
+        progressstr="ALMOST READY"
+      fi
+    fi
+
+    # Make an overlay with the progress string and save it to disk
+    convert "$progressimg" -fill white -font "$fontfile" -pointsize 50 -gravity Center \
+    -draw "text 0,400 '${progressstr}'" \
+    "$outputimg"
+
+    # Write the progress to the framebuffer (and display on tty7)
+    fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$outputimg"&
+
+    sleep $interval
+done 

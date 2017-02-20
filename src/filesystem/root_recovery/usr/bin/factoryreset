@@ -1,0 +1,57 @@
+#!/bin/sh
+# Author: Erik Heidstra <ErikHeidstra@live.nl>
+# Performs a factory reset by overwriting original root and home partitions with their backups
+
+logfile="/var/log/factoryreset"
+
+# Where to find the backups
+backuppart=/dev/mmcblk0p5
+mountdir="/backup"
+rootbackup="root.img.gz"
+homebackup="home.img.gz"
+bootbackup="bootbackup"
+
+# Other relevant partitions
+recoverypart=/dev/mmcblk0p6
+rootpart=/dev/mmcblk0p2
+homepart=/dev/mmcblk0p7
+
+# Status is outputted to these files to allow monitor to show progress
+statusfile="/var/run/factoryresetstatus"
+stepfile="/var/run/factoryresetstep"
+
+progressimg="/usr/share/factoryreset/lpfrg-factoryreset-portrait.png"
+
+# Show image overlay on tty7
+fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$progressimg"&
+
+# Begin with an empty status file
+rm $statusfile
+
+# Mount the backup partition
+mkdir -p $mountdir
+mount -o ro $backuppart $mountdir
+
+# Overwrite root partition with backup
+echo "Restoring root partition" >> $logfile
+echo "root" > $stepfile
+gunzip -c "$mountdir/$rootbackup" | dd of="$rootpart" 2> $statusfile
+
+# Overwrite home partition with backup
+echo "Restoring home partition" >> $logfile
+echo "home" > $stepfile
+gunzip -c "$mountdir/$homebackup" | dd of="$homepart" 2> $statusfile
+
+# Reset boot folder
+echo "Restoring boot partition" >> $logfile
+echo "boot" > $stepfile
+cp -rpf $mountdir/$bootbackup/. /boot/ >> $logfile
+
+# Reset boot partition and reboot	
+echo "Resetting cmdline" >> $logfile
+sed -i "s@boot=overlay@@" /boot/cmdline.txt # Makes the root partition writable
+sed -i "s@root=${recoverypart}@root=${rootpart}@" /boot/cmdline.txt
+
+echo "Rebooting" >> $logfile
+reboot
+exit 0

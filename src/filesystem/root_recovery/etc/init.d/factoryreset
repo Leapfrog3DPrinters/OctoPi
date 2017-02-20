@@ -11,49 +11,38 @@
 
 . /lib/lsb/init-functions
 
-backuppart=/dev/mmcblk0p5
-mountdir="/backup"
-rootbackup="root.img.gz"
-homebackup="home.img.gz"
-bootbackup="bootbackup"
+logfile="/var/log/factoryreset"
 
-recoverypart=/dev/mmcblk0p6
-rootpart=/dev/mmcblk0p2
-homepart=/dev/mmcblk0p7
+PIDFILE=/var/run/factoryreset.pid
+DAEMON=/usr/bin/factoryreset
 
-skipfile=/boot/nofactoryreset
+MONITORPIDFILE=/var/run/factoryresetmonitor.pid
+MONITORDAEMON=/usr/bin/factoryresetmonitor
+
 
 do_start () {
 
   if [ -f "$skipfile" ]; then
-      echo "$skipfile found. Skipping factoryreset." >> /var/log/factoryreset
-      exit 1;
+      echo "$skipfile found. Skipping factoryreset." >> $logfile
+      exit 0
   fi
 
-	# Show image overlay
-  fbi -noverbose -once -T 1 /usr/share/factoryreset/lpfrg-factoryreset-portrait.png&
-
-  mkdir -p $mountdir
-  mount -o ro $backuppart $mountdir
-
-  # Start copying old 
-  echo "Restoring root partition" >> /var/log/factoryreset
-  gunzip -c "$mountdir/$rootbackup" | dd of="$rootpart" >> /var/log/factoryreset
-
-  echo "Restoring home partition" >> /var/log/factoryreset
-  gunzip -c "$mountdir/$homebackup" | dd of="$homepart" >> /var/log/factoryreset
-
-  # Reset boot folder
-  echo "Restoring boot partition" >> /var/log/factoryreset
-  cp -rpf $mountdir/$bootbackup/. /boot/ >> /var/log/factoryreset
-
-	# Reset boot partition and reboot	
-  echo "Resetting cmdline" >> /var/log/factoryreset
-	sed -i "s@root=$recoverypart@root=$rootpart@" /boot/cmdline.txt
-
-  echo "Rebooting" >> /var/log/factoryreset
-	reboot
+  start-stop-daemon --start --background --quiet --pidfile $PIDFILE --make-pidfile --exec $DAEMON
+  start-stop-daemon --start --background --quiet --pidfile $MONITORPIDFILE --make-pidfile --exec $MONITORDAEMON
+  
+  exit 0
+	
 }
+
+do_stop () {
+
+  start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $MONITORPIDFILE
+  start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE
+  
+  exit 0
+
+}
+
 
 case "$1" in
   start|"")
@@ -64,7 +53,7 @@ case "$1" in
         exit 3
         ;;
   stop)
-        # No-op
+        do_stop
         ;;
   *)
         echo "Usage: change_password [start|stop]" >&2
