@@ -61,7 +61,7 @@ EOF
     expandto=$(($lastsector - 1))
 
     # Now find the partition number of the extended partition
-    EXTENDED_PART=$(parted /dev/mmcblk0 -ms unit s p | grep "Extended" | awk '{print $1}')
+    EXTENDED_PART=$(fdisk /dev/mmcblk0 -l | grep "Extended" | awk '{print $1}')
     EXTENDED_PART_NUM=${EXTENDED_PART#/dev/mmcblk0p}
     parted /dev/mmcblk0 <<EOF
 p

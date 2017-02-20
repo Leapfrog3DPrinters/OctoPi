@@ -1,3 +1,4 @@
+#!/bin/bash
 export DISPLAY=:0
 export XAUTHORITY=/home/pi/.Xauthority
 id=$(xinput -list | awk -v search="BYZ|WaveShare" '$0 ~ search {match($0, /id=[0-9]+/); if(RSTART) print substr($0, RSTART+3, RLENGTH-3) }');
