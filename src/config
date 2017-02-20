@@ -49,14 +49,19 @@ fi
 # if set will create a seperate home partition with given size in MB
 [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ] || OCTOPI_IMAGE_HOMEPARTITION_SIZE=400
 
-# if set will create 2 additional partitions: a copy of root and an install of dietPi to recover root
-# Note that the recovery and root partition need the same kernels to run! If theres a mismatch, try raspbian lite in stead of dietpi
+# if set will create 2 additional partitions: one to store backups of home and root partitions, and one that runs raspbian-lite to recover the backups
 [ -n "$OCTOPI_IMAGE_RECOVERY" ] || OCTOPI_IMAGE_RECOVERY=yes
+# Size of the recovery partition (that runs raspbian)
 [ -n "$OCTOPI_IMAGE_RECOVERYPARTITION_SIZE" ] || OCTOPI_IMAGE_RECOVERYPARTITION_SIZE=1400
+# Size of the backup partition (must have space for gzips of root+home partitions)
 [ -n "$OCTOPI_IMAGE_BACKUPPARTITION_SIZE" ] || OCTOPI_IMAGE_BACKUPPARTITION_SIZE=2700
+# Path to the chroot script that is executed on the recovery partition
 [ -n "$OCTOPI_RECOVERY_CHROOT_SCRIPT_PATH" ] || OCTOPI_RECOVERY_CHROOT_SCRIPT_PATH=$OCTOPI_SCRIPT_PATH/chroot_script_recovery
+# Maybe for later, if a different image is used than the main root
 #[ -n "$OCTOPI_RECOVERY_IMG" ] || OCTOPI_RECOVERY_IMG=`ls -t $OCTOPI_IMAGE_PATH/*dietpi*.img | head -n 1`
+# The partition number of root for the recovery partition (for raspbian lite this is 2)
 [ -n "$OCTOPI_RECOVERY_ROOT_PARTITION" ] || OCTOPI_RECOVERY_ROOT_PARTITION=2
+# Files on the boot partition that need to be backed up and recovered on a factory reset
 [ -n "$OCTOPI_RECOVERY_BOOT_FILES" ] || OCTOPI_RECOVERY_BOOT_FILES=( "octopi.txt" "config.txt" )
 
 # if set will resize root partition on image after build to minimum size + 

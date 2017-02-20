@@ -55,16 +55,24 @@ p
 w
 EOF
   else
-    fdisk /dev/mmcblk0 <<EOF
-p
-d
-$PART_NUM
-n
-l
-$PART_START
+    # Dealing with extended and logical partitions here
+    # First find size of SD cad
+    lastsector=$(blockdev --getsz /dev/mmcblk0)
+    expandto=$(($lastsector - 1))
 
+    # Now find the partition number of the extended partition
+    EXTENDED_PART=$(parted /dev/mmcblk0 -ms unit s p | grep "Extended" | awk '{print $1}')
+    EXTENDED_PART_NUM=${EXTENDED_PART#/dev/mmcblk0p}
+    parted /dev/mmcblk0 <<EOF
 p
-w
+resizepart
+$EXTENDED_PART_NUM
+y
+${expandto}s
+resizepart
+$PART_NUM
+${expandto}s
+q
 EOF
   fi
 

@@ -12,6 +12,7 @@
 . /lib/lsb/init-functions
 
 logfile="/var/log/factoryreset"
+skipfile="/boot/nofactoryreset"
 
 PIDFILE=/var/run/factoryreset.pid
 DAEMON=/usr/bin/factoryreset

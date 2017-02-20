@@ -21,8 +21,8 @@ stepfile="/var/run/factoryresetstep"
 interval=5
 
 # Read the uncompressed size of the backupimages
-rootsize=$(gzip -l "$mountdir/$rootbackup" | tail -1 | awk '{print $2-0}')
-homesize=$(gzip -l "$mountdir/$homebackup" | tail -1 | awk '{print $2-0}')
+rootsize=$(gzip -l "$mountdir/$rootbackup" | tail -1 | awk '{print $2}')
+homesize=$(gzip -l "$mountdir/$homebackup" | tail -1 | awk '{print $2}')
 
 # Begin the monitoring loop
 while true; do
@@ -31,7 +31,7 @@ while true; do
     progressstr=""
 
     # Read the current step of the procedure
-    step=$(<$stepfile)
+    step=$(< $stepfile)
 
     # Find dd process
     pid=$(pgrep ^dd)
@@ -41,20 +41,20 @@ while true; do
       kill -USR1 $pid
 
       # Read last line of statusfile
-      status=$(tail -1 "$statusfile" | awk '{print $1-0}')
+      status=$(tail -1 "$statusfile" | awk '{print $1}')
 
       # Make a nice string representation of the status
-      if [ step == "root" ]; then
+      if [ "$step" = "root" ]; then
         # First 50%
         progress=$(($status * 50 / $rootsize))
         progressstr="${progress}%"
-      elif [ step == "home" ]; then
+      elif [ "$step" == "home" ]; then
         # Second 50%
         progress=$(($status * 50 / $homesize + 50))
         progressstr="${progress}%"
       fi
     else
-      if [ step == "boot" ]; then
+      if [ "$step" = "boot" ]; then
         progressstr="ALMOST READY"
       fi
     fi
