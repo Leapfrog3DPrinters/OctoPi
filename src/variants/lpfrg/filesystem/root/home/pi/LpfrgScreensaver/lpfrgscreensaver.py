@@ -23,9 +23,12 @@ BUTTON_PIN = 16
 BOUNCETIME = 1000 # minimal press interval in ms
 
 FONT_FACE = "/home/pi/LpfrgScreensaver/futura.ttf"
-IMAGE_PATH = "/home/pi/LpfrgScreensaver/bolt350.png"
+IMAGE_FOLDER = "/home/pi/LpfrgScreensaver/logos/"
 OCTOPRINT_CONFIG_PATH = "/home/pi/.octoprint/config.yaml"
 JOB_URL = "http://localhost:5000/api/job?apikey={api_key}"
+DEFAULT_MODEL = "bolt"
+IDLE_STR = "IDLE"
+FINISHED_STR = "PRINT FINISHED"
 
 # the secret sauce is to get the "window id" out of $XSCREENSAVER_WINDOW
 # code comes from these two places:
@@ -164,25 +167,32 @@ class Screen(gtk.DrawingArea):
         self.cr = self.window.cairo_create()
         self.draw()
 
-class Frog(Screen):
+class ProgressDisplay(Screen):
     """This class is also a Drawing Area, coming from Screen."""
     def __init__ ( self ):
         Screen.__init__( self )
         self.octoprint_comm = OctoPrintComm()
-        self.progress_string = "Idle"
+        self.progress_string = IDLE_STR
+        self.image = None
         self.counter = 0
     
     def size(self, widget, event):
         self.screen_w, self.screen_h = self.window.get_size()
 
-        self.image = cairo.ImageSurface.create_from_png(IMAGE_PATH);
+        image_path = self.octoprint_comm.get_image_file()
+
+        if image_path:
+            self.image = cairo.ImageSurface.create_from_png(image_path)
+            self.image_w = self.image.get_width()
+            self.image_h = self.image.get_height()
+        else:
+            self.image_w = 0
+            self.image_h = 0
+
         self.font_face = create_cairo_font_face_for_file(FONT_FACE, 0)
         
         self.counter = 0
         self.fade_duration = 350
-
-        self.image_w = self.image.get_width()
-        self.image_h = self.image.get_height()
 
         self.image_x = (self.screen_w - self.image_w) / 2
         self.image_y = randint(0, self.screen_h - self.image_h)
@@ -199,7 +209,8 @@ class Frog(Screen):
 
         if self.counter < self.fade_duration:
             self.drawProgress(self.cr, self.counter / self.fade_duration)
-            self.drawFrog(self.cr, self.counter / self.fade_duration)
+            if self.image:
+                self.drawImage(self.cr, self.counter / self.fade_duration)
             
         
         self.counter += 1
@@ -219,7 +230,7 @@ class Frog(Screen):
         cr.show_text(self.progress_string)
 
 
-    def drawFrog ( self, cr, progress):
+    def drawImage ( self, cr, progress):
         cr.set_source_surface(self.image, self.image_x, self.image_y)
         cr.rectangle( self.image_x, self.image_y, self.image_w, self.image_h )
         cr.clip()
@@ -273,7 +284,9 @@ class ScreenSaverWindow(gtk.Window):
 
 class OctoPrintComm():
     def __init__(self):
+        self.config_data = None
         self.api_key = self._read_api_key()
+        self.model = self._read_model()
         self.job_url = JOB_URL.format(api_key=self.api_key)
 
     # Public methods
@@ -282,19 +295,39 @@ class OctoPrintComm():
 
         if job and "state" in job and "progress" in job:
             if job["state"] == "Operational" and job["progress"]["completion"] == 100:
-                return "Print finished"
+                return FINISHED_STR
             elif job["state"] == "Printing":
                 return "{0:.0f}%".format(job["progress"]["completion"])
         
-        return "Idle"
+        return IDLE_STR
 
+    def get_image_file(self):
+        if self.model:
+            path = os.path.join(IMAGE_FOLDER, self.model + ".png")
+            if os.path.exists(path):
+                return path
 
     # Private methods
-    def _read_api_key(self):
+    def _read_config(self):
         if os.path.exists(OCTOPRINT_CONFIG_PATH):
             with open(OCTOPRINT_CONFIG_PATH, "rb") as fp:
-                data = yaml.safe_load(fp)
-            return data["api"]["key"]
+                self.config_data = yaml.safe_load(fp)
+    
+    def _read_api_key(self):
+        if not self.config_data:
+            self._read_config()
+
+        if self.config_data and "api" in self.config_data and "key" in self.config_data["api"]:
+            return self.config_data["api"]["key"]
+
+    def _read_model(self):
+        if not self.config_data:
+            self._read_config()
+
+        if self.config_data and "plugins" in self.config_data and "lui" in self.config_data["plugins"] and "model" in self.config_data["plugins"]["lui"]:
+            return self.config_data["plugins"]["lui"]["model"].lower()
+        else:
+            return DEFAULT_MODEL
 
     def _get_job_data(self):
         try:
@@ -318,7 +351,7 @@ window.realize()
 window.modify_bg(gtk.STATE_NORMAL, gdk.color_parse("black"))
 
 window.connect( "delete-event", gtk.main_quit )
-widget = Frog()
+widget = ProgressDisplay()
 widget.show()
 window.add(widget)
 window.present()

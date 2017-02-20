@@ -22,10 +22,6 @@ echo "--- Setting owners and permissions"
 chmod +x /etc/rc.local
 chown -hR pi:pi /home/pi/.config/chromium
 
-chown pi:pi /home/pi/LpfrgScreensaver/lpfrgscreensaver.py
-chown pi:pi /home/pi/LpfrgScreensaver/lpfrg.png
-chmod +x /home/pi/LpfrgScreensaver/lpfrgscreensaver.py
-
 chown -hR pi:pi /home/pi/scripts
 chmod +x /home/pi/scripts/enable_cursor
 chmod +x /home/pi/scripts/disable_cursor
@@ -83,6 +79,11 @@ chmod +x /etc/init.d/aasoftpoweroff
 chmod +x /home/pi/scripts/poweroff.py
 update-rc.d aasoftpoweroff defaults 
 
+echo "--- Installing factoryreset"
+chmod +x /etc/init.d/factoryreset
+chmod +x /home/pi/scripts/factoryreset.py
+update-rc.d factoryreset defaults 
+
 echo "--- Installing cleanupmounts"
 chmod +x /etc/init.d/cleanupmounts
 update-rc.d cleanupmounts defaults
@@ -103,12 +104,14 @@ apt-get install --yes tlsdate
 echo "-- Installing (requirements for) LpfrgScreensaver"
 apt-get install --yes python-gtk2 python-yaml python-pip
 pip install requests
-
-echo "--- Cleanup"
-apt-get autoremove --yes
+chown -hR pi:pi /home/pi/LpfrgScreensaver
+chmod +x /home/pi/LpfrgScreensaver/lpfrgscreensaver.py
 
 echo "--- Update pi password"
 if [ -n $OCTOPI_PI_PASSWORD ]
 then
 	echo "pi:$OCTOPI_PI_PASSWORD" | chpasswd
 fi
+
+echo "--- Cleanup"
+apt-get autoremove --yes

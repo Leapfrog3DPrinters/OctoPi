@@ -9,6 +9,7 @@ OCTOPI_IMAGE_HOMEPARTITION_SIZE=400 #TODO: Find smaller values that will do the 
 # Skip resize root for now (may give issues with home partition)
 OCTOPI_IMAGE_RESIZEROOT=
 OCTOPI_ENABLE_BOOT_NETWORKSETTINGS=no
+OCTOPI_RECOVERY_BOOT_FILES=( "octopi.txt" "config.txt" "lpfrg.json" )
 
 # To set the pi password, make a file LPFRGPASSWD in the variants/lpfrg folder (to hide it from git)
 

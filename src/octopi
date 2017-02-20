@@ -173,10 +173,11 @@ pushd $OCTOPI_WORKSPACE
     mount_image $OCTOPI_IMG_PATH $recovery_partition_num $OCTOPI_MOUNT_PATH
 
     # We already have access to the boot partition here, so lets leverage that to make a backup of the important files
-    cp -f "$OCTOPI_MOUNT_PATH/boot/config.txt" "bootbackup/config.txt"
-    cp -f "$OCTOPI_MOUNT_PATH/boot/octopi.txt" "bootbackup/octopi.txt"
-    cp -f "$OCTOPI_MOUNT_PATH/boot/lpfrgpi.json" "bootbackup/lpfrgpi.json" # This is actually lpfrg variant stuff. Should move it there some day
-
+    for fn in "${OCTOPI_RECOVERY_BOOT_FILES[@]}"; do
+      if [ -f "$OCTOPI_MOUNT_PATH/boot/$fn" ]; then
+        cp -f "$OCTOPI_MOUNT_PATH/boot/$fn" "bootbackup/$fn"
+      fi
+    done
     
     pushd $OCTOPI_MOUNT_PATH
       echo "--- Executing recovery partition chroot script"
