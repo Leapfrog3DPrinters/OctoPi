@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Author: Erik Heidstra <ErikHeidstra@live.nl>
 # Monitors the factory reset process, by polling dd
 # A PNG image is pushed to the framebuffer that displays the current status
@@ -44,7 +44,7 @@ while true; do
       status=$(tail -1 "$statusfile" | awk '{print $1}')
 
       # Make a nice string representation of the status
-      if [ "$step" = "root" ]; then
+      if [ "$step" == "root" ]; then
         # First 50%
         progress=$(($status * 50 / $rootsize))
         progressstr="${progress}%"
