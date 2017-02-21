@@ -63,7 +63,7 @@ if [ $( is_in_apt libts-bin ) -eq 1 ]; then
   libts=libts-bin
 fi
 
-apt-get -y --force-yes install python2.7 python-virtualenv python-dev git screen subversion cmake checkinstall avahi-daemon libavahi-compat-libdnssd1 libffi-dev libssl-dev $libts
+apt-get -y --force-yes install python2.7 python-virtualenv python-dev git screen subversion cmake checkinstall avahi-daemon libavahi-compat-libdnssd1 libffi-dev libssl-dev fbi $libts
 
 echo " - Reinstall iputils-ping"
 apt-get install --reinstall iputils-ping

@@ -15,6 +15,41 @@ function restoreLd(){
   sed -i 's@\#/usr/lib/arm-linux-gnueabihf/libarmmem.so@/usr/lib/arm-linux-gnueabihf/libarmmem.so@' etc/ld.so.preload
 }
 
+function qemu-system-ready()
+{
+  image=$1
+
+  mkdir -p "mount"
+  mkdir -p "mount/boot"
+
+  mount_image $image 2 "mount"
+  pushd "mount"
+    fixLd
+  popd
+    cat <<EOF > mount/etc/udev/rules.d/90-qemu.rules &&
+KERNEL=="sda", SYMLINK+="mmcblk0"
+KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
+KERNEL=="sda2", SYMLINK+="root"
+EOF
+  
+  unmount_image "mount"
+
+  mkdir -p "mount"
+  mkdir -p "mount/boot"
+
+  mount_image $image 6 "mount"
+  pushd "mount"
+    fixLd
+  popd
+    cat <<EOF > mount/etc/udev/rules.d/90-qemu.rules &&
+KERNEL=="sda", SYMLINK+="mmcblk0"
+KERNEL=="sda?", SYMLINK+="mmcblk0p%n"
+KERNEL=="sda6", SYMLINK+="root"
+EOF
+  
+  unmount_image "mount"
+}
+
 function pause() {
   # little debug helper, will pause until enter is pressed and display provided
   # message
