@@ -1,5 +1,6 @@
 #!/bin/bash
 # With a lot of thanks to https://github.com/RPi-Distro/raspi-config
+set -x
 
 get_init_sys() {
   if command -v systemctl > /dev/null && systemctl | grep -q '\-\.mount'; then
@@ -15,7 +16,8 @@ get_init_sys() {
 do_expand_homefs() {
   get_init_sys
   if [ $SYSTEMD -eq 1 ]; then
-    HOME_PART=$(mount | sed -n 's|^/dev/\(.*\) on /home .*|\1|p')
+    #HOME_PART=$(mount | sed -n 's|^/dev/\(.*\) on /home .*|\1|p')
+    HOME_PART=$(cat /etc/fstab | grep "/home" | awk '{print $1}' | sed -n 's|^/dev/\(.*\)|\1|p')
   else
     if ! [ -h /dev/home ]; then
       whiptail --msgbox "/dev/home does not exist or is not a symlink. Don't know how to expand" 20 60 2
@@ -55,6 +57,11 @@ p
 w
 EOF
   else
+    if [ $(mount | grep -q "on /home") ]; then
+        whiptail --msgbox "$HOME_PART is mounted. Please unmount before resizing." 20 60 2
+        return 0
+    fi
+
     # Dealing with extended and logical partitions here
     # First find size of SD cad
     lastsector=$(blockdev --getsz /dev/mmcblk0)
@@ -63,19 +70,26 @@ EOF
     # Now find the partition number of the extended partition
     EXTENDED_PART=$(fdisk /dev/mmcblk0 -l | grep "Extended" | awk '{print $1}')
     EXTENDED_PART_NUM=${EXTENDED_PART#/dev/mmcblk0p}
-    parted /dev/mmcblk0 <<EOF
-p
-resizepart
-$EXTENDED_PART_NUM
-y
-${expandto}s
-resizepart
-$PART_NUM
-${expandto}s
-q
-EOF
+    parted /dev/mmcblk0 -s p
+    parted /dev/mmcblk0 -ms resizepart "$EXTENDED_PART_NUM" "${expandto}s" 
+    parted /dev/mmcblk0 -ms resizepart "$PART_NUM" "${expandto}s" 
+    parted /dev/mmcblk0 -s p
+
+#     parted /dev/mmcblk0 <<EOF
+# p
+# resizepart
+# $EXTENDED_PART_NUM
+# y
+# ${expandto}s
+# resizepart
+# $PART_NUM
+# ${expandto}s
+# q
+# EOF
   fi
 
+   # Fix fstab to automount home
+    sed -i "s|^\(/dev/$HOME_PART .*\)\(noauto\)\(.*\)|\1auto\3|" /etc/fstab
 
   ASK_TO_REBOOT=1
 

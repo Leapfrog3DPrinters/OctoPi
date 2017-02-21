@@ -20,9 +20,6 @@ apt-get install --yes fbi
 echo "--- Installing ImageMagick"
 apt-get install --yes imagemagick
 
-echo "--- Installing OpenSSH"
-apt-get install --yes openssh-server
-
 echo "--- Installing factoryreset"
 chmod +x /etc/init.d/factoryreset
 chmod +x /usr/bin/factoryreset

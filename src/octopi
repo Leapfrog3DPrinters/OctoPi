@@ -126,7 +126,8 @@ pushd $OCTOPI_WORKSPACE
     #Edit fstab to account for the new home partition
     if [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]
     then
-      sed -i "3 a /dev/mmcblk0p$home_partition_num /home ext4 rw,user,auto,exec 0 2" etc/fstab
+      # No automount. This will be set after the partition has been resized.
+      sed -i "3 a /dev/mmcblk0p$home_partition_num /home ext4 rw,user,noauto,exec 0 2" etc/fstab
     fi
 
     # Prevent automount of backup and recovery partitions
