@@ -39,7 +39,7 @@ echo exit 101 > /usr/sbin/policy-rc.d
 chmod +x /usr/sbin/policy-rc.d
 
 # Restore home folder if we made a new partition
-if [ -n "$OCTOPI_IMAGE_HOMEPARTITION" ]
+if [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]
 then
     mkdir -p /home/pi
     cp -R /etc/skel/. /home/pi/
@@ -49,8 +49,6 @@ fi
 unpack /filesystem/home/pi /home/pi pi
 unpack /filesystem/home/root /root root
 unpack /filesystem/boot /boot
-
-chmod +x /home/pi/scripts/root_readonly
 
 apt-get update
 
@@ -260,6 +258,7 @@ fi
 #unpack root in the end, so etc file are not overwritten, might need to add two roots int he future
 unpack /filesystem/root /
 chmod +x /usr/bin/expand-homefs
+chmod +x /usr/bin/root-readonly
 
 #####################################################################
 ### setup services

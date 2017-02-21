@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 set -x
 
+progressimg="/usr/share/root-readonly/lpfrg-rootreadonly-portrait.png"
+overlayfile="/usr/share/root-readonly/overlay"
+
+# Display a screen overlay to notify user we're updating
+fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$progressimg"&
+
 echo "--- Making root read-only"
 echo "--- Preparing overlay"
-cp -f /home/pi/scripts/overlay /usr/share/initramfs-tools/scripts/overlay
+cp -f "$overlayfile" /usr/share/initramfs-tools/scripts/overlay
 
 pushd /usr/share/initramfs-tools
 	grep -q "overlay" hook-functions || sed -i "528s@usbhid@usbhid overlay@g" hook-functions

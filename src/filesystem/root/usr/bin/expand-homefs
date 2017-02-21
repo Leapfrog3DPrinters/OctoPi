@@ -2,6 +2,8 @@
 # With a lot of thanks to https://github.com/RPi-Distro/raspi-config
 set -x
 
+progressimg="/usr/share/expand-homefs/lpfrg-expandhomefs-portrait.png"
+
 get_init_sys() {
   if command -v systemctl > /dev/null && systemctl | grep -q '\-\.mount'; then
     SYSTEMD=1
@@ -125,6 +127,11 @@ EOF
   chmod +x /etc/init.d/homeresize2fs_once &&
   update-rc.d homeresize2fs_once defaults
 }
+
+
+
+# Display a screen overlay to notify user we're expanding 
+fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$progressimg"&
 
 echo 'Expanding home partition...'
 do_expand_homefs
