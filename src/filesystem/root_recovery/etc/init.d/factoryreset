@@ -29,7 +29,7 @@ do_start () {
   fi
 
   start-stop-daemon --start --background --quiet --pidfile $PIDFILE --make-pidfile --exec $DAEMON
-  start-stop-daemon --start --background --quiet --pidfile $MONITORPIDFILE --make-pidfile --exec $MONITORDAEMON
+  start-stop-daemon --start --background --quiet --pidfile $MONITORPIDFILE --make-pidfile --startas /bin/bash -- -c "exec $MONITORDAEMON"
   
   exit 0
 	

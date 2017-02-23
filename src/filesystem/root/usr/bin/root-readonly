@@ -5,7 +5,7 @@ progressimg="/usr/share/root-readonly/lpfrg-rootreadonly-portrait.png"
 overlayfile="/usr/share/root-readonly/overlay"
 
 # Display a screen overlay to notify user we're updating
-fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$progressimg"&
+fbi -noverbose --autodown -d /dev/fb0 -T 7 "$progressimg"&
 
 echo "--- Making root read-only"
 echo "--- Preparing overlay"

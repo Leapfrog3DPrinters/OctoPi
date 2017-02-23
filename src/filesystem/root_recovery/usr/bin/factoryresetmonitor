@@ -20,9 +20,12 @@ stepfile="/var/run/factoryresetstep"
 # Monitoring interval in seconds
 interval=5
 
-# Read the uncompressed size of the backupimages
+# Wait for the dirctory to be mounted and read the uncompressed size of the backupimages
+while [ -z "$rootsize" ]; do
 rootsize=$(gzip -l "$mountdir/$rootbackup" | tail -1 | awk '{print $2}')
 homesize=$(gzip -l "$mountdir/$homebackup" | tail -1 | awk '{print $2}')
+sleep 2
+done
 
 # Begin the monitoring loop
 while true; do
@@ -65,7 +68,7 @@ while true; do
     "$outputimg"
 
     # Write the progress to the framebuffer (and display on tty7)
-    fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$outputimg"&
+    fbi -noverbose --autodown -d /dev/fb0 -T 7 "$outputimg"&
 
     sleep $interval
 done 

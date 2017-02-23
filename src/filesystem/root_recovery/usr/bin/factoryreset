@@ -23,7 +23,7 @@ stepfile="/var/run/factoryresetstep"
 progressimg="/usr/share/factoryreset/lpfrg-factoryreset-portrait.png"
 
 # Show image overlay on tty7
-fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$progressimg"&
+fbi -noverbose --autodown -d /dev/fb0 -T 7 "$progressimg"&
 
 # Begin with an empty status file
 rm $statusfile

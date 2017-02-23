@@ -131,7 +131,7 @@ EOF
 
 
 # Display a screen overlay to notify user we're expanding 
-fbi -noverbose --autodown -d /dev/fb0 -once -T 7 "$progressimg"&
+fbi -noverbose --autodown -d /dev/fb0 -T 7 "$progressimg"&
 
 echo 'Expanding home partition...'
 do_expand_homefs
