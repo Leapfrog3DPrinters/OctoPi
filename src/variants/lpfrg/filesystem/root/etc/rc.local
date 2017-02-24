@@ -27,14 +27,14 @@ echo 1 0eef 0005 259 > /sys/module/hid_multitouch/drivers/hid\:hid-multitouch/ne
 # wifi power off fix
 iwconfig wlan0 power off
 
-# tlsdate first run with leap of faith
-tlsdate -V -l -t -s
-
 #Suppress Kernel Messages
 dmesg --console-off
 
 # Set default display variable
 export DISPLAY=:0
 export XAUTHORITY=/home/pi/.Xauthority
+
+# tlsdate first run with leap of faith
+tlsdate -V -l -t -s
 
 exit 0

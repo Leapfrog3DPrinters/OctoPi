@@ -20,7 +20,7 @@ apt-get install --yes fbi
 echo "--- Installing ImageMagick"
 apt-get install --yes imagemagick
 
-echo "--- Installing factoryreset"
+echo "--- Installing powerbutton"
 chmod +x /etc/init.d/factoryreset
 chmod +x /usr/bin/factoryreset
 chmod +x /usr/bin/factoryresetmonitor

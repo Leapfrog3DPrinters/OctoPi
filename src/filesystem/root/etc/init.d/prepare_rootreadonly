@@ -14,33 +14,45 @@
 do_start () {
   . /boot/octopi.txt
 
-  if [ "$perform_resize" != "no" && $(ls /etc/rc3.d/ | grep "prepare_resize" -q) ]
+  systemctl is-enabled "prepare_resize"
+  prepare_resize_exists=$?
+
+  ls /etc/init.d/ | grep -q "resize2fs_once" || ls /etc/init.d/ | grep -q "homeresize2fs_once"
+  resize_once_exists=$?
+
+  cat /boot/cmdline.txt | grep -q "boot=overlay"
+  is_already_readonly=$?
+
+  if [ "$perform_resize" != "no" ] && { [ "$prepare_resize_exists" = 0 ] || [ "$resize_once_exists" = 0 ]; }
   then
-    log_success_msg "Waiting for root/home resize to complete"
+    echo "Waiting for root/home resize to complete" >> /var/log/prepare_rootreadonly
     exit 0
   fi
 
   if [ "$root_readonly" = "yes" ]
   then
-    if [ $(cat /boot/cmdline.txt | grep "boot=overlay" -q) ]; then
-      log_success_msg "Root already readonly, doing nothing..."
+    if [ "$is_already_readonly" = 0 ]; then
+      echo "Root already readonly, doing nothing..." >> /var/log/prepare_rootreadonly
       exit 0
     else
+      echo "Going to make root readonly" >> /var/log/prepare_rootreadonly
       /usr/bin/root-readonly >> /var/log/prepare_rootreadonly
       #/usr/sbin/update-rc.d prepare_rootreadonly remove >> /var/log/prepare_rootreadonly
 
-      log_success_msg "Root made readonly, rebooting to apply..."
+      echo "Root made readonly, rebooting to apply..." >> /var/log/prepare_rootreadonly
       /sbin/reboot
 
       exit 0
     fi
   else
-    if [ $(cat /boot/cmdline.txt | grep "boot=overlay" -q) ]; then
+
+    if [ "$is_already_readonly" = 0 ]; then
       sed -i "s/boot=overlay//" /boot/cmdline.txt
-      log_success_msg "Root made writable"
+      echo "Root made writable" >> /var/log/prepare_rootreadonly
+      /sbin/reboot
       exit 0
     else
-      log_failure_msg "Root readonly disabled"
+      echo "Root readonly disabled" >> /var/log/prepare_rootreadonly
       exit 0
     fi
   fi

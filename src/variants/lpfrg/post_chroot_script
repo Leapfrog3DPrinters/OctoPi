@@ -79,10 +79,8 @@ chmod +x /etc/init.d/aasoftpoweroff
 chmod +x /home/pi/scripts/poweroff.py
 update-rc.d aasoftpoweroff defaults 
 
-echo "--- Installing factoryreset"
-chmod +x /etc/init.d/factoryreset
-chmod +x /home/pi/scripts/factoryreset.py
-update-rc.d factoryreset defaults 
+echo "--- Installing factoryreset" 
+chmod +x /home/pi/scripts/factoryreset.py #executed by autostart
 
 echo "--- Installing cleanupmounts"
 chmod +x /etc/init.d/cleanupmounts
