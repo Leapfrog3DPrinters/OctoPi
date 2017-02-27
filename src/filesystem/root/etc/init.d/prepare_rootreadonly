@@ -17,13 +17,13 @@ do_start () {
   systemctl is-enabled "prepare_resize"
   prepare_resize_exists=$?
 
-  ls /etc/init.d/ | grep -q "resize2fs_once" || ls /etc/init.d/ | grep -q "homeresize2fs_once"
-  resize_once_exists=$?
+  #ls /etc/init.d/ | grep -q "resize2fs_once" || ls /etc/init.d/ | grep -q "homeresize2fs_once"
+  #resize_once_exists=$?
 
   cat /boot/cmdline.txt | grep -q "boot=overlay"
   is_already_readonly=$?
-
-  if [ "$perform_resize" != "no" ] && { [ "$prepare_resize_exists" = 0 ] || [ "$resize_once_exists" = 0 ]; }
+#  if [ "$perform_resize" != "no" ] && { [ "$prepare_resize_exists" = 0 ] || [ "$resize_once_exists" = 0 ]; }
+  if [ "$perform_resize" != "no" ] && [ "$prepare_resize_exists" = 0 ]
   then
     echo "Waiting for root/home resize to complete" >> /var/log/prepare_rootreadonly
     exit 0
