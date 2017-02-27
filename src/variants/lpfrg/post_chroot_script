@@ -23,6 +23,7 @@ chmod +x /etc/rc.local
 chown -hR pi:pi /home/pi/.config/chromium
 
 chown -hR pi:pi /home/pi/scripts
+chown -hR pi:pi /home/pi/.octoprint
 chmod +x /home/pi/scripts/enable_cursor
 chmod +x /home/pi/scripts/disable_cursor
 

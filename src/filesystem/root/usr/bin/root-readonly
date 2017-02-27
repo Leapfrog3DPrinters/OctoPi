@@ -8,6 +8,10 @@ overlayfile="/usr/share/root-readonly/overlay"
 fbi -noverbose --autodown -d /dev/fb0 -T 7 "$progressimg"&
 
 echo "--- Making root read-only"
+
+echo "--- Disabling fsck for root partition"
+sed -i "s|1$|0|" /etc/fstab #Root partition line must end with a 1
+
 echo "--- Preparing overlay"
 cp -f "$overlayfile" /usr/share/initramfs-tools/scripts/overlay
 
