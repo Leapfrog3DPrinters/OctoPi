@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+#set -x
 
 source /common.sh
 install_chroot_fail_on_error_trap
@@ -132,7 +132,7 @@ ln --symbolic /home/pi/NetworkManager/system-connections /etc/NetworkManager/sys
 
 echo "--- Enabling some GPIO pins on boot"
 # As rootreadonly will do the initramfs update, it is not done here
-chmod +x /usr/share/initramfs-tools/scripts/init-premount/gpio_init
+chmod +x /usr/share/initramfs-tools/scripts/init-top/gpio_init
 
 # # Compile the dts file into a dtb file
 # dtc -@ -I dts -O dtb -o /boot/overlays/gpio-lpfrg.dtb /boot/overlays/gpio-lpfrg.dts

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+#set -x
 set -e
 # Helper script that runs in a chroot to create the recovery environment
 # Author: Erik Heidstra <ErikHeidstra@live.nl>
