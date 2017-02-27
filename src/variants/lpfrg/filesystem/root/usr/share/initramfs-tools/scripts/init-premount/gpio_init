@@ -1,0 +1,42 @@
+#!/bin/sh
+# Sets the GPIO ports to the Leapfrog defaults (to turn auxiliary power and the power led on as early as possible)
+# Author: Erik Heidstra <ErikHeidstra@live.nl>
+
+PREREQ=""
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+modprobe gpio-arizona
+modprobe gpio-mcp23s08
+
+LED_PIN=25 #GPIO22 
+PWR_PIN=17 #GPIO11
+
+# Set up GPIO 4 and set to output
+echo "$LED_PIN" > /sys/class/gpio/export
+sleep 1
+echo "out" > "/sys/class/gpio/gpio${LED_PIN}/direction"
+
+# Set up GPIO 4 and set to output
+echo "$PWR_PIN" > /sys/class/gpio/export
+sleep 1
+echo "out" > "/sys/class/gpio/gpio${PWR_PIN}/direction"
+
+# Write output
+echo "1" > "/sys/class/gpio/gpio${LED_PIN}/value"
+echo "1" > "/sys/class/gpio/gpio${PWR_PIN}/value"
+
+# Clean up
+#echo "$LED_PIN" > /sys/class/gpio/unexport
+#echo "$PWR_PIN" > /sys/class/gpio/unexport

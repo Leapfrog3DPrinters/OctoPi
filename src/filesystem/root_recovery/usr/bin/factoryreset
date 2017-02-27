@@ -16,6 +16,9 @@ recoverypart=/dev/mmcblk0p6
 rootpart=/dev/mmcblk0p2
 homepart=/dev/mmcblk0p7
 
+# The type of reset to perform is read from this file
+resettypefile="/boot/factoryreset.txt"
+
 # Status is outputted to these files to allow monitor to show progress
 statusfile="/var/run/factoryresetstatus"
 stepfile="/var/run/factoryresetstep"
@@ -32,10 +35,20 @@ rm $statusfile
 mkdir -p $mountdir
 mount -o ro $backuppart $mountdir
 
-# Overwrite root partition with backup
-echo "Restoring root partition" >> $logfile
-echo "root" > $stepfile
-gunzip -c "$mountdir/$rootbackup" | dd of="$rootpart" 2> $statusfile
+# Figure out the resettype
+resettype=`cat $resettypefile`
+
+if [ "$resettype" != "full" ] && [ "$resettype" != "fast" ]; then
+	echo "Resettype must be either full or fast, found: $resettype" >> $logfile  
+	exit 1
+fi
+
+if [ "$resettype" = "full" ]; then
+	# Overwrite root partition with backup
+	echo "Restoring root partition" >> $logfile
+	echo "root" > $stepfile
+	gunzip -c "$mountdir/$rootbackup" | dd of="$rootpart" 2> $statusfile
+fi
 
 # Overwrite home partition with backup
 echo "Restoring home partition" >> $logfile

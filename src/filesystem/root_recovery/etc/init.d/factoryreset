@@ -12,7 +12,7 @@
 . /lib/lsb/init-functions
 
 logfile="/var/log/factoryreset"
-skipfile="/boot/nofactoryreset"
+resettypefile="/boot/factoryreset.txt"
 
 PIDFILE=/var/run/factoryreset.pid
 DAEMON=/usr/bin/factoryreset
@@ -22,17 +22,18 @@ MONITORDAEMON=/usr/bin/factoryresetmonitor
 
 
 do_start () {
+  resettype=`cat "$resettypefile"`
+  if [ "$resettype" = "full" ] || [ "$resettype" = "fast" ]; then
+      echo "Resettype $resettype. Starting daemons..." >> $logfile
 
-  if [ -f "$skipfile" ]; then
-      echo "$skipfile found. Skipping factoryreset." >> $logfile
+      start-stop-daemon --start --background --quiet --pidfile $PIDFILE --make-pidfile --exec $DAEMON
+      start-stop-daemon --start --background --quiet --pidfile $MONITORPIDFILE --make-pidfile --startas /bin/bash -- -c "exec $MONITORDAEMON"
+
+      exit 0
+  else
+      echo "Resettype none or not recognized. Skipping factoryreset." >> $logfile
       exit 0
   fi
-
-  start-stop-daemon --start --background --quiet --pidfile $PIDFILE --make-pidfile --exec $DAEMON
-  start-stop-daemon --start --background --quiet --pidfile $MONITORPIDFILE --make-pidfile --startas /bin/bash -- -c "exec $MONITORDAEMON"
-  
-  exit 0
-	
 }
 
 do_stop () {

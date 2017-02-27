@@ -111,5 +111,33 @@ then
 	echo "pi:$OCTOPI_PI_PASSWORD" | chpasswd
 fi
 
+echo "--- Move NetworkManager configuration files"
+
+# Make room for new files
+mkdir /home/pi/NetworkManager
+mkdir /home/pi/NetworkManager/system-connections 
+
+# Remove old configuration files
+if [ -f "/etc/NetworkManager/NetworkManager.conf" ]; then
+	mv /etc/NetworkManager/NetworkManager.conf /home/pi/NetworkManager/NetworkManager.conf
+fi
+
+if [ -d "/etc/NetworkManager/system-connections" ]; then
+	rm -r /etc/NetworkManager/system-connections
+fi
+
+# Create symlinks
+ln --symbolic /home/pi/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+ln --symbolic /home/pi/NetworkManager/system-connections /etc/NetworkManager/system-connections
+
+echo "--- Enabling some GPIO pins on boot"
+# As rootreadonly will do the initramfs update, it is not done here
+chmod +x /usr/share/initramfs-tools/scripts/init-premount/gpio_init
+
+# # Compile the dts file into a dtb file
+# dtc -@ -I dts -O dtb -o /boot/overlays/gpio-lpfrg.dtb /boot/overlays/gpio-lpfrg.dts
+# # Remove the source file
+# rm /boot/overlays/gpio-lpfrg.dts
+
 echo "--- Cleanup"
 apt-get autoremove --yes

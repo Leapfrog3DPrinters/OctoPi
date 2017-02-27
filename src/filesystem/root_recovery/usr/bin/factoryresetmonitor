@@ -17,15 +17,28 @@ fontfile="/usr/share/factoryreset/futura.ttf"
 statusfile="/var/run/factoryresetstatus"
 stepfile="/var/run/factoryresetstep"
 
+# Figure out the resettype
+resettypefile="/boot/factoryreset.txt"
+resettype=$(< $resettypefile)
+
 # Monitoring interval in seconds
 interval=5
 
-# Wait for the dirctory to be mounted and read the uncompressed size of the backupimages
+# Wait for the directory to be mounted and read the uncompressed size of the backupimages
 while [ -z "$rootsize" ]; do
-rootsize=$(gzip -l "$mountdir/$rootbackup" | tail -1 | awk '{print $2}')
-homesize=$(gzip -l "$mountdir/$homebackup" | tail -1 | awk '{print $2}')
-sleep 2
+  rootsize=$(gzip -l "$mountdir/$rootbackup" | tail -1 | awk '{print $2}')
+  homesize=$(gzip -l "$mountdir/$homebackup" | tail -1 | awk '{print $2}')
+  sleep 2
 done
+
+if [ "$resettype" == "full" ]; then
+  totalsize=$(($rootsize+$homesize))
+elif [ "$resettype" == "fast" ]; then
+  totalsize=$homesize
+else
+  echo "Resettype not recognized, must be fast or full. Found: $resettype"
+  exit 1
+fi
 
 # Begin the monitoring loop
 while true; do
@@ -48,16 +61,16 @@ while true; do
 
       # Make a nice string representation of the status
       if [ "$step" == "root" ]; then
-        # First 50%
-        progress=$(($status * 50 / $rootsize))
-        progressstr="${progress}%"
-      elif [ "$step" == "home" ]; then
-        # Second 50%
-        progress=$(($status * 50 / $homesize + 50))
-        progressstr="${progress}%"
+          progress=$(($status * 100 / $totalsize))
+      elif [ "$step" == "home" && "$resettype" == "full" ]; then
+          progress=$(( ($status + $rootsize) * 100 / $totalsize ))
+      else
+          progress=$(($status * 100 / $totalsize))
       fi
+      
+      progressstr="${progress}%"
     else
-      if [ "$step" = "boot" ]; then
+      if [ "$step" == "boot" ]; then
         progressstr="ALMOST READY"
       fi
     fi
