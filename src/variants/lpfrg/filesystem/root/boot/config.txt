@@ -63,7 +63,7 @@ dtparam=audio=on
 #dtoverlay=vc4-kms-v3d
 
 # Disable bluetooth
-dtoverlay=pi3-disable-bt
+#dtoverlay=pi3-disable-bt
 
 disable_splash=1
 gpu_mem=128

@@ -131,6 +131,13 @@ fi
 ln --symbolic /home/pi/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
 ln --symbolic /home/pi/NetworkManager/system-connections /etc/NetworkManager/system-connections
 
+# DHCP optimization (for boot speedup)
+grep -q "noarp" /etc/dhcpcd.conf || echo "noarp" >> /etc/dhcpcd.conf
+rm /etc/systemd/system/dhcpcd.service.d/wait.conf
+
+echo "--- Deleting ModemManager"
+apt-get remove --yes ModemManager
+
 echo "--- Enabling some GPIO pins on boot"
 # As rootreadonly will do the initramfs update, it is not done here
 chmod +x /usr/share/initramfs-tools/scripts/init-top/gpio_init
