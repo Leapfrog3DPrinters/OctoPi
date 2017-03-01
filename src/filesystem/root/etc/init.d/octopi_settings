@@ -1,0 +1,95 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          octopi_settings
+# Required-Start:    $local_fs
+# Required-Stop:
+# Default-Start:     3
+# Default-Stop:
+# Short-Description: Applies octopi.txt settings, such as resizing and readonly
+# Description:
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+do_start () {
+  . /boot/octopi.txt
+
+  root_resized_file=/.resized
+  home_resized_file=/home/.resized
+  resizing=0
+
+  ## Perform resizing, and exit script if any action is performed
+  if [ "$perform_resize" = "root" ] && [ ! -f "$root_resized_file"  ]
+  then
+      # Resize root using utility provided in raspbian
+      /usr/bin/raspi-config --expand-rootfs >> /var/log/octopi_settings
+      touch "$root_resized_file"
+
+      log_success_msg "Resize rootfs prepared, rebooting to apply..."
+      
+      /sbin/reboot&
+      exit 0
+  elif [ "$perform_resize" = "home" ] && [ ! -f "$home_resized_file" ]
+  then
+      # Resize home partition using custom tool
+      /usr/bin/expand-homefs >> /var/log/octopi_settings
+      touch "$home_resized_file"
+
+      log_success_msg "Resize homefs prepared, rebooting to apply..."
+      
+      /sbin/reboot&
+      exit 0
+  else
+      log_success_msg "No need to resize any partitions"
+  fi
+
+
+  # Make root partition readonly
+  # This part is only executed if there was nothing to resize
+  grep -q "boot=overlay" /boot/cmdline.txt 
+  is_already_readonly=$?
+
+  if [ "$root_readonly" = "yes" ]
+  then
+    if [ "$is_already_readonly" = 0 ]; then
+      echo "Root already readonly, doing nothing..." >> /var/log/octopi_settings
+      
+      exit 0
+    else
+      echo "Going to make root readonly" >> /var/log/octopi_settings
+      /usr/bin/root-readonly >> /var/log/octopi_settings
+
+      echo "Root made readonly, rebooting to apply..." >> /var/log/octopi_settings
+      
+      /sbin/reboot&
+      exit 0
+    fi
+  elif [ "$is_already_readonly" = 0 ]; then
+      sed -i "s/boot=overlay//" /boot/cmdline.txt
+      echo "Root made writable" >> /var/log/octopi_settings
+      
+      /sbin/reboot&
+      exit 0
+  else
+      echo "Root readonly disabled" >> /var/log/octopi_settings
+      exit 0
+  fi
+
+}
+
+case "$1" in
+  start|"")
+        do_start
+        ;;
+  restart|reload|force-reload)
+        echo "Error: argument '$1' not supported" >&2
+        exit 3
+        ;;
+  stop)
+        # No-op
+        ;;
+  *)
+        echo "Usage: octopi_settings [start|stop]" >&2
+        exit 3
+        ;;
+esac

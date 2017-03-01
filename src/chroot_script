@@ -212,9 +212,10 @@ sed -i "s@secure_path=\"@secure_path=\"/root/bin:@g" /etc/sudoers
 chmod +x /root/bin/git
 
 # enable raspicam
-echo "# enable raspicam" >> /boot/config.txt
-echo "start_x=1" >> /boot/config.txt
-echo "gpu_mem=128" >> /boot/config.txt
+if [ "$OCTOPI_ENABLE_RASPICAM" == "yes" ]; then
+  grep -q "start_x" /boot/config.txt || echo "start_x=1" >> /boot/config.txt
+  grep -q "gpu_mem" /boot/config.txt || echo "gpu_mem=128" >> /boot/config.txt
+fi
 
 # allow network configuration via /boot/octopi-network.txt
 if [ "$OCTOPI_ENABLE_BOOT_NETWORKSETTINGS" == "yes" ]
@@ -266,9 +267,8 @@ chmod +x /usr/bin/root-readonly
 ### Disable GUI at start
 systemctl_if_exists disable lightdm.service
 
-update-rc.d prepare_resize defaults
-chmod +x /etc/init.d/prepare_rootreadonly
-update-rc.d prepare_rootreadonly defaults
+chmod +x /etc/init.d/octopi_settings
+update-rc.d octopi_settings defaults
 
 ### OctoPrint
 

@@ -122,6 +122,9 @@ fi
 # Custom networksettings in /boot/..
 [ -n "$OCTOPI_ENABLE_BOOT_NETWORKSETTINGS" ] || OCTOPI_ENABLE_BOOT_NETWORKSETTINGS=yes
 
+# Raspicam
+[ -n "$OCTOPI_ENABLE_RASPICAM" ] || OCTOPI_ENABLE_RASPICAM=no
+
 ###############################################################################
 # Rewrite any build urls that are not yet set if we have a repository mirror
 # configured.

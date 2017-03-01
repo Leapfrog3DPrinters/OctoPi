@@ -62,7 +62,7 @@ while true; do
       # Make a nice string representation of the status
       if [ "$step" == "root" ]; then
           progress=$(($status * 100 / $totalsize))
-      elif [ "$step" == "home" && "$resettype" == "full" ]; then
+      elif [ "$step" == "home" ] && [ "$resettype" == "full" ]; then
           progress=$(( ($status + $rootsize) * 100 / $totalsize ))
       else
           progress=$(($status * 100 / $totalsize))

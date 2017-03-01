@@ -99,6 +99,8 @@ popd
 
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
+#TODO: Edit service tlsdated to include 'skip verification' argument
+update-rc.d tlsdated defaults
 
 echo "-- Installing (requirements for) LpfrgScreensaver"
 apt-get install --yes python-gtk2 python-yaml python-pip
@@ -134,6 +136,14 @@ ln --symbolic /home/pi/NetworkManager/system-connections /etc/NetworkManager/sys
 # DHCP optimization (for boot speedup)
 grep -q "noarp" /etc/dhcpcd.conf || echo "noarp" >> /etc/dhcpcd.conf
 rm /etc/systemd/system/dhcpcd.service.d/wait.conf
+
+echo "--- Move clock file"
+
+# Create symlink for fake-hwclock
+if [ -f "/etc/fake-hwclock.data" ]; then
+	mv /etc/fake-hwclock.data /home/pi/fake-hwclock.data
+fi
+ln --symbolic /home/pi/fake-hwclock.data /etc/fake-hwclock.data
 
 echo "--- Deleting ModemManager"
 apt-get remove --yes ModemManager

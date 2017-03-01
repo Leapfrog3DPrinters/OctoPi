@@ -13,7 +13,7 @@ FASTFACTORYRESETCOMMAND = r"echo 'fast' | sudo tee /boot/factoryreset.txt && sud
 BUTTON_PIN = 16
 
 BOUNCETIME = 100 # minimal press interval in ms
-RESETPRESSTIME = 3 # duration of press before factory reset is initiated (in seconds)
+RESETPRESSTIME = 15 # duration of press before factory reset is initiated (in seconds)
 
 RESPONSE_CANCEL=0
 RESPONSE_FAST=1
