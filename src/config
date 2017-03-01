@@ -125,6 +125,10 @@ fi
 # Raspicam
 [ -n "$OCTOPI_ENABLE_RASPICAM" ] || OCTOPI_ENABLE_RASPICAM=no
 
+# Swap file
+[ -n "$OCTOPI_SWAPFILE_ENABLE" ] || OCTOPI_SWAPFILE_ENABLE=yes
+[ -n "$OCTOPI_SWAPFILE_LOCATION" ] || OCTOPI_SWAPFILE_LOCATION=/var/swap
+
 ###############################################################################
 # Rewrite any build urls that are not yet set if we have a repository mirror
 # configured.

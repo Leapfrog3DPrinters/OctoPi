@@ -19,6 +19,10 @@ else
 	OCTOPI_PI_PASSWORD=
 fi
 
+# Prevent useless swapfile on readonly root partition
+OCTOPI_SWAPFILE_ENABLE=yes
+OCTOPI_SWAPFILE_LOCATION=/home/swap
+
 # Custom config
 OCTOPI_INCLUDE_OCTOPRINT_LUI=yes
 OCTOPI_OCTOPRINT_LUI_REPO_SHIP=https://github.com/Leapfrog3DPrinters/OctoPrint-LUI.git

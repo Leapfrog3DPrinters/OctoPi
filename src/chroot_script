@@ -330,6 +330,16 @@ then
   rm /etc/udev/rules.d/95-ads7846.rules
 fi
 
+### Swapfile
+
+if [ "$OCTOPI_SWAPFILE_ENABLE" == "yes" ]
+then
+  # Change swapfile location
+  sed -i "s|^#CONF_SWAPFILE=\(.*\)|CONF_SWAPFILE=${OCTOPI_SWAPFILE_LOCATION}|" /etc/dphys-swapfile 
+else
+  sudo apt-get purge --yes dphys-swapfile
+fi
+
 #cleanup
 apt-get clean
 apt-get autoremove -y
