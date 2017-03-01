@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=lpfrg
+Description=Lpfrg Splash screen
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/lpfrg
+ScriptFile=/usr/share/plymouth/themes/lpfrg/lpfrg.script
