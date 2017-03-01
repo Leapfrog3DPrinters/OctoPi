@@ -90,12 +90,15 @@ update-rc.d cleanupmounts defaults
 echo "--- Installing dorotatetouch"
 chmod +x /usr/bin/dorotatetouch
 
-echo "-- Setting timezone"
+echo "--- Setting timezone"
 pushd /home/pi
 	echo "" >> .profile
 	echo "TZ='Europe/Amsterdam'" >> .profile
 	echo "export TZ" >> .profile
 popd
+
+echo "--- Setting plymouth theme"
+plymouth-set-default-theme lpfrg
 
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate

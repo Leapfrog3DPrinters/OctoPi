@@ -10,7 +10,7 @@ chown -hR pi:pi /home/pi/.config
 
 apt-get update
 
-apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit xinput
+apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
 #apt-get install --yes xorg xinit xinput lightdm pcmanfm plymouth
 
 echo "--- Setting up to boot to desktop"
