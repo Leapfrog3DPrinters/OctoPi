@@ -13,33 +13,18 @@ apt-get update
 apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
 #apt-get install --yes xorg xinit xinput lightdm pcmanfm plymouth
 
+echo "--- Removing unnecessary stuff"
+apt-get purge --yes gnome-keyring pulseaudio
+
 echo "--- Setting up to boot to desktop"
 systemctl set-default graphical.target
 
 echo "--- Removing uninstalled applications from desktop"
-# we make sure that non of the non-installed packages show up in either
-# the default lxde panel or menu
-basefolder="/usr/share/raspi-ui-overrides/applications/"
-lxde_panel_file="/etc/xdg/lxpanel/profile/LXDE-pi/panels/panel"
-files="libreoffice-draw libreoffice-math libreoffice-startcenter bluej greenfoot wolfram-mathematica wolfram-language"
+rm /usr/share/raspi-ui-overrides/applications/*
 
-for entry in $files
-do
-        desktop_file="$basefolder$entry.desktop"
-
-        # hide .desktop file from menu
-        grep "Hidden: true" $desktop_file || echo "Hidden: true" >> $desktop_file
-
-        # remove any links to it from panel
-        # No need for now, removing complete panelfile anyway
-        #perl -i -p0e 's!\s*Button {\n\s*id='"$desktop_file"'\n\s*}!!igs' "$lxde_panel_file"
-done
-
-#Delete taskbar
-if [ -f "$lxde_panel_file" ]
-then
-  rm "$lxde_panel_file"
-fi
+echo "--- Stop lxpanel from starting"
+sed -i "s|^\@lxpanel\(.*\)||" /etc/xdg/lxsession/LXDE-pi/autostart
+sed -i "s|^\@point-rpi\(.*\)||" /etc/xdg/lxsession/LXDE-pi/autostart
 
 echo "--- Installing chromium"
 apt-get install --yes chromium-browser

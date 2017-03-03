@@ -31,11 +31,11 @@ update-initramfs -c -k $kernelv
 
 echo "--- Configuring /boot"
 pushd /boot
-	mv -f "initrd.img-$kernelv" "initrd7.img"
+	#mv -f "initrd.img-$kernelv" "initrd7.img"
 
 	grep -q "overlay" cmdline.txt || sed -i '1s@^@boot=overlay @' cmdline.txt
 	grep -q "kernel=kernel7.img" config.txt || echo "kernel=kernel7.img" >> config.txt
-	grep -q "initramfs initrd7.img" config.txt || echo "initramfs initrd7.img" >> config.txt
+	grep -q "initramfs initrd.img-$kernelv" config.txt || echo "initramfs initrd.img-$kernelv" >> config.txt
 popd
 
 echo "--- Done. Be sure to reboot!"

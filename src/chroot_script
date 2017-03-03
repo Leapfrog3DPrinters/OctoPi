@@ -270,6 +270,9 @@ systemctl_if_exists disable lightdm.service
 chmod +x /etc/init.d/octopi_settings
 update-rc.d octopi_settings defaults
 
+# Prevent lightdm from starting before octopi_settings has completed
+sed -i "/After=/s/$/ octopi_settings.service/" /lib/systemd/system/lightdm.service
+
 ### OctoPrint
 
 if [ "$OCTOPI_INCLUDE_OCTOPRINT" == "yes" ]

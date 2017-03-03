@@ -149,11 +149,30 @@ fi
 ln --symbolic /home/pi/fake-hwclock.data /etc/fake-hwclock.data
 
 echo "--- Deleting ModemManager"
-apt-get remove --yes ModemManager
+apt-get purge --yes ModemManager
 
 echo "--- Enabling some GPIO pins on boot"
 # As rootreadonly will do the initramfs update, it is not done here
 chmod +x /usr/share/initramfs-tools/scripts/init-top/gpio_init
+
+echo "--- Fixing plymouth"
+rm /usr/share/initramfs-tools/scripts/init-bottom/plymouth
+sed -i "/After=/s/$/ plymouth-quit.service/" /lib/systemd/system/lightdm.service
+sed -i "/ExecStart=/s/$/ --retain-splash/" /lib/systemd/system/plymouth-quit.service
+
+echo "--- Saving keyboard config"
+rm /etc/console-setup/cached_*
+setupcon --save # Boosts boot performance
+
+echo "--- Removing NOOBS trace"
+update-rc.d apply_noobs_os_config remove
+rm /etc/init.d/apply_noobs_os_config
+
+echo "--- Removing resize2fs_once"
+if [ -f "/etc/init.d/resize2fs_once" ]; then
+	update-rc.d resize2fs_once remove
+	rm /etc/init.d/resize2fs_once
+fi
 
 # # Compile the dts file into a dtb file
 # dtc -@ -I dts -O dtb -o /boot/overlays/gpio-lpfrg.dtb /boot/overlays/gpio-lpfrg.dts
