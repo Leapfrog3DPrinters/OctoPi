@@ -265,7 +265,7 @@ chmod +x /usr/bin/root-readonly
 ### setup services
 
 ### Disable GUI at start
-systemctl_if_exists disable lightdm.service
+#systemctl_if_exists disable lightdm.service
 
 chmod +x /etc/init.d/octopi_settings
 update-rc.d octopi_settings defaults

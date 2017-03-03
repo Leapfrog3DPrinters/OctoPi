@@ -10,21 +10,26 @@ chown -hR pi:pi /home/pi/.config
 
 apt-get update
 
-apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
-#apt-get install --yes xorg xinit xinput lightdm pcmanfm plymouth
+#apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
+apt-get install --yes xorg xinit xinput lightdm openbox plymouth xscreensaver udisks2 udevil dbus-x11 --no-install-recommends
 
-echo "--- Removing unnecessary stuff"
-apt-get purge --yes gnome-keyring pulseaudio
+echo "--- Configuring desktop environment"
+
+# Disable cursor
+sed -i "s|^#xserver-command\(.*\)|xserver-command=X -nocursor|" /etc/lightdm/lightdm.conf
+
+# Autologin user pi
+sed -i "s|^#autologin-user\(.*\)|autologin-user=pi|" /etc/lightdm/lightdm.conf
+
 
 echo "--- Setting up to boot to desktop"
 systemctl set-default graphical.target
 
-echo "--- Removing uninstalled applications from desktop"
-rm /usr/share/raspi-ui-overrides/applications/*
+echo "--- Configuring automount"
 
-echo "--- Stop lxpanel from starting"
-sed -i "s|^\@lxpanel\(.*\)||" /etc/xdg/lxsession/LXDE-pi/autostart
-sed -i "s|^\@point-rpi\(.*\)||" /etc/xdg/lxsession/LXDE-pi/autostart
+# Configure automount directory
+mkdir -p /media/pi
+sed -i "s|^allowed_media_dirs\(.*\)|allowed_media_dirs = /media/\$USER|" /etc/udevil/udevil.conf
 
 echo "--- Installing chromium"
 apt-get install --yes chromium-browser

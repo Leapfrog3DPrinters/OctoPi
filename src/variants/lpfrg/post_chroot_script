@@ -19,6 +19,12 @@ echo "--- Copying additional LPFRG files"
 unpack /filesystem/root /
 
 echo "--- Setting owners and permissions"
+# TODO: Find a neater way to handle this
+chmod +r -R /etc/xdg
+chmod +x /etc/xdg/openbox
+chmod +x /etc/xdg/openbox/autostart
+chmod +x /etc/xdg/openbox/environment
+
 chmod +x /etc/rc.local
 chown -hR pi:pi /home/pi/.config/chromium
 
@@ -26,6 +32,12 @@ chown -hR pi:pi /home/pi/scripts
 chown -hR pi:pi /home/pi/.octoprint
 chmod +x /home/pi/scripts/enable_cursor
 chmod +x /home/pi/scripts/disable_cursor
+
+echo "--- Autostarting devmon"
+# Autostart devmon on boot with user pi
+echo "ARGS=\"\"" > /etc/conf.d/devmon
+install -Dm644 /etc/systemd/system/devmon@.service /lib/systemd/system/devmon@.service
+ln --symbolic /lib/systemd/system/devmon@.service /etc/systemd/system/multi-user.target.wants/devmon@pi.service
 
 #cleanup
 apt-get clean
@@ -133,8 +145,9 @@ if [ -d "/etc/NetworkManager/system-connections" ]; then
 fi
 
 # Create symlinks
-ln --symbolic /home/pi/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
-ln --symbolic /home/pi/NetworkManager/system-connections /etc/NetworkManager/system-connections
+mkdir /home/etc -p
+ln --symbolic /home/etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+ln --symbolic /home/etc/NetworkManager/system-connections /etc/NetworkManager/system-connections
 
 # DHCP optimization (for boot speedup)
 grep -q "noarp" /etc/dhcpcd.conf || echo "noarp" >> /etc/dhcpcd.conf
@@ -143,10 +156,11 @@ rm /etc/systemd/system/dhcpcd.service.d/wait.conf
 echo "--- Move clock file"
 
 # Create symlink for fake-hwclock
+mkdir /home/etc -p
 if [ -f "/etc/fake-hwclock.data" ]; then
-	mv /etc/fake-hwclock.data /home/pi/fake-hwclock.data
+	mv /etc/fake-hwclock.data /home/etc/fake-hwclock.data
 fi
-ln --symbolic /home/pi/fake-hwclock.data /etc/fake-hwclock.data
+ln --symbolic /home/etc/fake-hwclock.data /etc/fake-hwclock.data
 
 echo "--- Deleting ModemManager"
 apt-get purge --yes ModemManager

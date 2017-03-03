@@ -99,16 +99,16 @@ temperature:
     name: petg2
   - bed: 70
     extruder: 230
-    name: nylon
+    name: Nylon
   - bed: 80
     extruder: 270
-    name: ht
+    name: HT
   - bed: 0
     extruder: 200
-    name: pro1
+    name: Pro1
   - bed: 60
     extruder: 220
-    name: proone
+    name: Proone
 webcam:
   ffmpeg: /usr/bin/avconv
   snapshot: http://127.0.0.1:8080/?action=snapshot

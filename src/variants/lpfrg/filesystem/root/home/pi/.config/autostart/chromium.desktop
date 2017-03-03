@@ -1,4 +1,0 @@
-[Desktop Entry]
-Name=Chromium
-Exec=chromium-browser http://localhost/ --kiosk --incognito --disable-pinch --no-first-run 
-Type=application

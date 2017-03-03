@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Factory reset
-Exec=/home/pi/scripts/factoryreset.py
-Icon=
-Comment=
