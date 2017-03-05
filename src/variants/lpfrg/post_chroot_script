@@ -112,6 +112,13 @@ popd
 echo "--- Setting plymouth theme"
 plymouth-set-default-theme lpfrg
 
+echo "--- Fixing plymouth"
+rm /usr/share/initramfs-tools/scripts/init-bottom/plymouth
+sed -i "/After=/s/$/ lightdm.service/" /lib/systemd/system/plymouth-quit.service
+sed -i "/After=/s/$/ lightdm.service/" /lib/systemd/system/plymouth-quit-wait.service
+
+sed -i "/ExecStart=/s/$/ --retain-splash/" /lib/systemd/system/plymouth-quit.service
+
 echo "-- Installing tlsdate"
 apt-get install --yes tlsdate
 #TODO: Edit service tlsdated to include 'skip verification' argument
@@ -168,11 +175,6 @@ apt-get purge --yes ModemManager
 echo "--- Enabling some GPIO pins on boot"
 # As rootreadonly will do the initramfs update, it is not done here
 chmod +x /usr/share/initramfs-tools/scripts/init-top/gpio_init
-
-echo "--- Fixing plymouth"
-rm /usr/share/initramfs-tools/scripts/init-bottom/plymouth
-sed -i "/After=/s/$/ plymouth-quit.service/" /lib/systemd/system/lightdm.service
-sed -i "/ExecStart=/s/$/ --retain-splash/" /lib/systemd/system/plymouth-quit.service
 
 echo "--- Saving keyboard config"
 rm /etc/console-setup/cached_*

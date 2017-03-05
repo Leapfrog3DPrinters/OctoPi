@@ -1,0 +1,5 @@
+#!/bin/bash
+# Makes root read-writable again and reboots immediately
+sudo sed -i "s@boot=overlay@@" /boot/cmdline.txt
+sudo sed -i "s@root_readonly=\"yes\"@root_readonly=\"no\"@" /boot/octopi.txt
+sudo reboot

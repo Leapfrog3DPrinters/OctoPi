@@ -11,7 +11,7 @@ chown -hR pi:pi /home/pi/.config
 apt-get update
 
 #apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
-apt-get install --yes xorg xinit xinput lightdm openbox plymouth xscreensaver udisks2 udevil dbus-x11 --no-install-recommends
+apt-get install --yes xorg xinit xinput lightdm openbox plymouth xscreensaver udisks2 udevil dbus-x11 feh --no-install-recommends
 
 echo "--- Configuring desktop environment"
 

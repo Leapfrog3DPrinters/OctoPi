@@ -14,6 +14,7 @@ plugins:
   - announcements
   - softwareupdate
   - corewizard
+  - virtual_printer
   discovery:
     publicPort: 80
   flasharduino:
@@ -87,16 +88,16 @@ temperature:
     name: PVA
   - bed: 45
     extruder: 205
-    name: pva1
+    name: PVA1
   - bed: 60
     extruder: 200
-    name: petg
+    name: PETG
   - bed: 70
     extruder: 230
-    name: hybrid
+    name: Hybrid
   - bed: 60
     extruder: 210
-    name: petg2
+    name: PETG2
   - bed: 70
     extruder: 230
     name: Nylon
