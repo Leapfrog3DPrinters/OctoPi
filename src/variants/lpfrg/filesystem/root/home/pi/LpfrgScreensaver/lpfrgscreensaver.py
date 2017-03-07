@@ -238,12 +238,12 @@ class ProgressDisplay(Screen):
         cr.paint_with_alpha(alpha)
 
     def getAlpha(self, progress):
-        if progress <= 0.33:
-            return 3*progress
-        elif progress <= 0.67:
+        if progress <= 0.2:
+            return 5*progress
+        elif progress <= 0.8:
             return 1
         else:
-            return 3 * (1-progress)
+            return 5 * (1-progress)
 
 class ScreenSaverWindow(gtk.Window):
 

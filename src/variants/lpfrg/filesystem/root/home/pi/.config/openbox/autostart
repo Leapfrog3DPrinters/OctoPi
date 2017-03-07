@@ -1,5 +1,5 @@
 feh --bg-max /home/pi/lpfrg-portrait.png &
-chromium-browser http://localhost/ --kiosk --incognito --disable-pinch --no-first-run &
+chromium-browser http://localhost/ --kiosk --incognito --disable-pinch --no-first-run --overscroll-history-navigation=0 &
 /home/pi/scripts/factoryreset.py &
 sh -c 'xset m 20/10 10 r rate 500 30 b on' &
 dorotatetouch &

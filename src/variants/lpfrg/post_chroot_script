@@ -21,12 +21,10 @@ unpack /filesystem/root /
 echo "--- Setting owners and permissions"
 # TODO: Find a neater way to handle this
 chmod +r -R /etc/xdg
-chmod +x /etc/xdg/openbox
-chmod +x /etc/xdg/openbox/autostart
-chmod +x /etc/xdg/openbox/environment
 
 chmod +x /etc/rc.local
 chown -hR pi:pi /home/pi/.config/chromium
+chown -hR pi:pi /home/pi/.config/openbox
 
 chown -hR pi:pi /home/pi/scripts
 chown -hR pi:pi /home/pi/.octoprint

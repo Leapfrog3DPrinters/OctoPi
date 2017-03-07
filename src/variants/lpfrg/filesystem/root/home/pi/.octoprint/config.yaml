@@ -5,6 +5,9 @@ accessControl:
   - 127.0.0.1/8
 appearance:
   name: Bolt
+devel:
+  webassets:
+    clean_on_startup: false
 feature:
   modelSizeDetection: false
 plugins:
@@ -71,45 +74,36 @@ system:
     name: Update Gcode Render Module
 temperature:
   profiles:
+  - bed: 0
+    extruder: 200
+    name: PLA
   - bed: 70
     extruder: 230
     name: ABS
-  - bed: 40
-    extruder: 200
-    name: PLA
-  - bed: 50
-    extruder: 240
+  - bed: 45
+    extruder: 220
     name: Flex
-  - bed: 60
-    extruder: 240
-    name: PET
-  - bed: 45
-    extruder: 195
-    name: PVA
-  - bed: 45
-    extruder: 205
-    name: PVA1
-  - bed: 60
-    extruder: 200
-    name: PETG
   - bed: 70
-    extruder: 230
+    extruder: 240
     name: Hybrid
-  - bed: 60
+  - bed: 70
+    extruder: 240
+    name: HIPS
+  - bed: 45
     extruder: 210
-    name: PETG2
+    name: Wood
+  - bed: 70
+    extruder: 210
+    name: Carbon
+  - bed: 45
+    extruder: 200
+    name: PVA
   - bed: 70
     extruder: 230
     name: Nylon
-  - bed: 80
-    extruder: 270
-    name: HT
-  - bed: 0
-    extruder: 200
-    name: Pro1
   - bed: 60
     extruder: 220
-    name: Proone
+    name: PET-G
 webcam:
   ffmpeg: /usr/bin/avconv
   snapshot: http://127.0.0.1:8080/?action=snapshot
