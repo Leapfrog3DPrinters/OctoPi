@@ -22,22 +22,22 @@ do_start () {
   if [ "$perform_resize" = "root" ] && [ ! -f "$root_resized_file"  ]
   then
       # Resize root using utility provided in raspbian
-      /usr/bin/raspi-config --expand-rootfs >> /var/log/octopi_settings
+      /usr/bin/raspi-config --expand-rootfs | tee /var/log/octopi_settings
       touch "$root_resized_file"
 
       log_success_msg "Resize rootfs prepared, rebooting to apply..."
       
-      /sbin/reboot&
+      /sbin/reboot
       exit 0
   elif [ "$perform_resize" = "home" ] && [ ! -f "$home_resized_file" ]
   then
       # Resize home partition using custom tool
-      /usr/bin/expand-homefs >> /var/log/octopi_settings
+      /usr/bin/expand-homefs | tee /var/log/octopi_settings
       touch "$home_resized_file"
 
       log_success_msg "Resize homefs prepared, rebooting to apply..."
       
-      /sbin/reboot&
+      /sbin/reboot
       exit 0
   else
       log_success_msg "No need to resize any partitions"
@@ -52,26 +52,26 @@ do_start () {
   if [ "$root_readonly" = "yes" ]
   then
     if [ "$is_already_readonly" = 0 ]; then
-      echo "Root already readonly, doing nothing..." >> /var/log/octopi_settings
+      echo "Root already readonly, doing nothing..." | tee /var/log/octopi_settings
       
       exit 0
     else
-      echo "Going to make root readonly" >> /var/log/octopi_settings
-      /usr/bin/root-readonly >> /var/log/octopi_settings
+      echo "Going to make root readonly" | tee /var/log/octopi_settings
+      /usr/bin/root-readonly | tee /var/log/octopi_settings
 
-      echo "Root made readonly, rebooting to apply..." >> /var/log/octopi_settings
+      echo "Root made readonly, rebooting to apply..." | tee /var/log/octopi_settings
       
-      /sbin/reboot&
+      /sbin/reboot
       exit 0
     fi
   elif [ "$is_already_readonly" = 0 ]; then
       sed -i "s/boot=overlay//" /boot/cmdline.txt
-      echo "Root made writable" >> /var/log/octopi_settings
+      echo "Root made writable" | tee /var/log/octopi_settings
       
-      /sbin/reboot&
+      /sbin/reboot
       exit 0
   else
-      echo "Root readonly disabled" >> /var/log/octopi_settings
+      echo "Root readonly disabled" | tee /var/log/octopi_settings
       exit 0
   fi
 

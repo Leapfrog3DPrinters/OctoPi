@@ -194,10 +194,10 @@ class ProgressDisplay(Screen):
         self.counter = 0
         self.fade_duration = 350
 
+        self.text_margin = 20
+
         self.image_x = (self.screen_w - self.image_w) / 2
         self.image_y = randint(0, self.screen_h - self.image_h - self.text_margin - 50)
-
-        self.text_margin = 20
 
         self.progress_string = self.octoprint_comm.get_progress_string()
        
