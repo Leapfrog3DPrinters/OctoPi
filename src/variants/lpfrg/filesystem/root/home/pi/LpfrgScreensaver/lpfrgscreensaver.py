@@ -195,7 +195,7 @@ class ProgressDisplay(Screen):
         self.fade_duration = 350
 
         self.image_x = (self.screen_w - self.image_w) / 2
-        self.image_y = randint(0, self.screen_h - self.image_h)
+        self.image_y = randint(0, self.screen_h - self.image_h - self.text_margin - 50)
 
         self.text_margin = 20
 
@@ -217,7 +217,7 @@ class ProgressDisplay(Screen):
 
         if self.counter >= self.fade_duration:
             self.progress_string = self.octoprint_comm.get_progress_string()
-            self.image_y = randint(0, self.screen_h - self.image_h)
+            self.image_y = randint(0, self.screen_h - self.image_h - self.text_margin - 50)
             self.counter = 0
        
     def drawProgress(self, cr, progress):
