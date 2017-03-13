@@ -1,0 +1,27 @@
+#!/bin/sh
+
+ORIGINAL_LOGFILE=/var/log/syslog
+ORIGINAL_LOGFILE_BACKUP=/var/log/syslog.bak
+LOGFILE=/home/log/syslog.log
+TEMP_LOGFILE=/home/log/syslog-temp.log
+RECORDS_TO_KEEP=3000
+
+
+mkdir -p /home/log
+
+# If the new logfile exists, keep the last n records and store them in a temporary file
+if [ -f $LOGFILE ]; then
+  tail -n $RECORDS_TO_KEEP $LOGFILE > $TEMP_LOGFILE
+fi
+
+if [ -f $ORIGINAL_LOGFILE ]; then
+  # Add the contents of the syslog file to the temporary logfile
+  cat $ORIGINAL_LOGFILE >> $TEMP_LOGFILE
+  # Rename the original logfile, to prevent it from being copied twice
+  mv -f $ORIGINAL_LOGFILE $ORIGINAL_LOGFILE_BACKUP
+fi
+
+# Rename the temporary logfile to the new logfile
+mv -f $TEMP_LOGFILE $LOGFILE
+
+exit 0

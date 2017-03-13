@@ -1,0 +1,11 @@
+[Unit]
+Description=Syslog copy service
+After=multi-user.target
+Before=shutdown.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/copy_syslog
+
+[Install]
+WantedBy=graphical.target

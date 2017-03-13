@@ -118,12 +118,17 @@ sed -i "/After=/s/$/ lightdm.service/" /lib/systemd/system/plymouth-quit-wait.se
 
 sed -i "/ExecStart=/s/$/ --retain-splash/" /lib/systemd/system/plymouth-quit.service
 
-echo "-- Installing tlsdate"
+echo "--- Installing tlsdate"
 apt-get install --yes tlsdate
 #TODO: Edit service tlsdated to include 'skip verification' argument
 update-rc.d tlsdated defaults
 
-echo "-- Installing (requirements for) LpfrgScreensaver"
+echo "--- Installing syslog_copy"
+chmod +x /usr/bin/copy_syslog
+chmod +x /etc/systemd/system/copy_syslog.service
+systemctl enable copy_syslog
+
+echo "--- Installing (requirements for) LpfrgScreensaver"
 apt-get install --yes python-gtk2 python-yaml python-pip
 pip install requests
 chown -hR pi:pi /home/pi/LpfrgScreensaver
