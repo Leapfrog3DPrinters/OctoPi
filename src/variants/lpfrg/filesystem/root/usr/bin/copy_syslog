@@ -2,12 +2,12 @@
 
 ORIGINAL_LOGFILE=/var/log/syslog
 ORIGINAL_LOGFILE_BACKUP=/var/log/syslog.bak
-LOGFILE=/home/log/syslog.log
-TEMP_LOGFILE=/home/log/syslog-temp.log
+LOGFILE=/home/pi/.octoprint/logs/syslog.log
+TEMP_LOGFILE=/home/pi/.octoprint/logs/syslog-temp.log
 RECORDS_TO_KEEP=3000
 
 
-mkdir -p /home/log
+mkdir -p /home/pi/.octoprint/logs/
 
 # If the new logfile exists, keep the last n records and store them in a temporary file
 if [ -f $LOGFILE ]; then
@@ -23,5 +23,6 @@ fi
 
 # Rename the temporary logfile to the new logfile
 mv -f $TEMP_LOGFILE $LOGFILE
+chown pi:pi $LOGFILE
 
 exit 0

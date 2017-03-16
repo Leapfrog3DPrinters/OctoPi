@@ -24,7 +24,7 @@ plugins:
     avrdude_path: /usr/bin/avrdude
   lui:
     changelog_version: 1.0.0
-    model: Bolt
+    model: bolt
   softwareupdate:
     _config_version: 4
     check_providers:
