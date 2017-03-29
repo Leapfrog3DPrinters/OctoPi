@@ -74,7 +74,7 @@ system:
     name: Update Gcode Render Module
 temperature:
   profiles:
-  - bed: 0
+  - bed: 40
     extruder: 200
     name: PLA
   - bed: 70
