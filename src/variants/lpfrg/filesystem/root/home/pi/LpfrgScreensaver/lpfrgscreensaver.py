@@ -25,6 +25,7 @@ BOUNCETIME = 1000 # minimal press interval in ms
 FONT_FACE = "/home/pi/LpfrgScreensaver/futura.ttf"
 IMAGE_FOLDER = "/home/pi/LpfrgScreensaver/logos/"
 OCTOPRINT_CONFIG_PATH = "/home/pi/.octoprint/config.yaml"
+OCTOPRINT_MACHINE_DATA_PATH = "/home/pi/.octoprint/data/lui/machine.json"
 JOB_URL = "http://localhost:5000/api/job?apikey={api_key}"
 DEFAULT_MODEL = "bolt"
 IDLE_STR = "IDLE"
@@ -285,6 +286,7 @@ class ScreenSaverWindow(gtk.Window):
 class OctoPrintComm():
     def __init__(self):
         self.config_data = None
+        self.machine_data = None
         self.api_key = self._read_api_key()
         self.model = self._read_model()
         self.job_url = JOB_URL.format(api_key=self.api_key)
@@ -313,6 +315,11 @@ class OctoPrintComm():
             with open(OCTOPRINT_CONFIG_PATH, "rb") as fp:
                 self.config_data = yaml.safe_load(fp)
     
+    def _read_machine_data(self):
+        if os.path.exists(OCTOPRINT_MACHINE_DATA_PATH):
+            with open(OCTOPRINT_MACHINE_DATA_PATH, "rb") as fp:
+                self.machine_data = json.load(fp)
+
     def _read_api_key(self):
         if not self.config_data:
             self._read_config()
@@ -321,13 +328,15 @@ class OctoPrintComm():
             return self.config_data["api"]["key"]
 
     def _read_model(self):
-        if not self.config_data:
-            self._read_config()
+        if not self.machine_data:
+            self._read_machine_data()
 
-        if self.config_data and "plugins" in self.config_data and "lui" in self.config_data["plugins"] and "model" in self.config_data["plugins"]["lui"]:
-            return self.config_data["plugins"]["lui"]["model"].lower()
-        else:
-            return DEFAULT_MODEL
+        if self.machine_data and "_default" in self.machine_data:
+            for _, item in self.machine_data["_default"].iteritems():
+                if "property" in item and "value" in item and item["property"] == "machine_type":
+                    return item["value"].lower()
+        
+        return DEFAULT_MODEL
 
     def _get_job_data(self):
         try:

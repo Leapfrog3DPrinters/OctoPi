@@ -19,10 +19,14 @@ echo "--- Copying additional LPFRG files"
 unpack /filesystem/root /
 
 echo "--- Setting owners and permissions"
-# TODO: Find a neater way to handle this
+# TODO: Find a neater way to handle this. Maybe use permissions in GIT?
 chmod +r -R /etc/xdg
 
 chmod +x /etc/rc.local
+
+chown pi:pi /home/pi/.bash_aliases
+chmod +x /home/pi/.bash_aliases
+
 chown -hR pi:pi /home/pi/.config/chromium
 chown -hR pi:pi /home/pi/.config/openbox
 
@@ -173,6 +177,9 @@ if [ -f "/etc/fake-hwclock.data" ]; then
 fi
 ln --symbolic /home/etc/fake-hwclock.data /etc/fake-hwclock.data
 
+echo "--- Installing readahead"
+apt-get install --yes readahead
+
 echo "--- Deleting ModemManager"
 apt-get purge --yes ModemManager
 
@@ -198,6 +205,28 @@ fi
 # dtc -@ -I dts -O dtb -o /boot/overlays/gpio-lpfrg.dtb /boot/overlays/gpio-lpfrg.dts
 # # Remove the source file
 # rm /boot/overlays/gpio-lpfrg.dts
+
+if [ "$BUILD_FLAVOR" == "devel" ]; then
+	echo "--- Applying devel flavor"
+
+	echo "-- Horizontal display"
+	sed -i "s@display_rotate=1@display_rotate=0@" /boot/config.txt
+
+	echo "-- Enable cursor"
+	sed -i "s@xserver-command=X -nocursor@#xserver-command=X -nocursor@" /etc/lightdm/lightdm.conf	
+
+	echo "-- Keep root writable"
+	sed -i "s@root_readonly=\"yes\"@root_readonly=\"no\"@" /boot/octopi.txt
+
+	echo "-- Enable OctoPrint virtual printer"
+	sed -i "/- virtual_printer/d" /home/pi/.octoprint/config.yaml
+	sed -i "s@devel:@devel:\n  virtualPrinter:\n    enabled: true@" /home/pi/.octoprint/config.yaml
+	sed -i "s@port: /dev/ttyUSB0@port: VIRTUAL@" /home/pi/.octoprint/config.yaml
+	sed -i "s@log: false@log: true@" /home/pi/.octoprint/config.yaml
+
+	echo "-- Installing dos2unix"
+	apt-get install dos2unix --yes
+fi
 
 echo "--- Cleanup"
 apt-get autoremove --yes

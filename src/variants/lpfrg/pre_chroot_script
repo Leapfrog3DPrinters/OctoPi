@@ -13,7 +13,7 @@ apt-get update
 echo "--- Installing desktop environment"
 
 #apt-get install --yes raspberrypi-ui-mods lightdm pcmanfm xinit lxterminal xinput
-apt-get install --yes xorg xinit xinput lightdm openbox plymouth xscreensaver udisks2 udevil dbus-x11 feh --no-install-recommends
+apt-get install --yes xorg xinit xinput lightdm openbox plymouth xscreensaver udisks2 udevil dbus-x11 feh exfat-fuse --no-install-recommends
 
 echo "--- Configuring desktop environment"
 
