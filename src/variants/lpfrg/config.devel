@@ -1,2 +1,4 @@
 VARIANT_CONFIG_DIR=$(realpath -s $(dirname $(realpath -s $BASH_SOURCE)))
 . "$VARIANT_CONFIG_DIR/config"
+
+OCTOPI_LPFRG_DEVEL=1

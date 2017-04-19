@@ -178,7 +178,7 @@ fi
 ln --symbolic /home/etc/fake-hwclock.data /etc/fake-hwclock.data
 
 #echo "--- Installing readahead"
-#apt-get install --yes readahead
+#apt-get install --yes readahead-fedora
 
 echo "--- Deleting ModemManager"
 apt-get purge --yes ModemManager
@@ -206,7 +206,7 @@ fi
 # # Remove the source file
 # rm /boot/overlays/gpio-lpfrg.dts
 
-if [ "$BUILD_FLAVOR" == "devel" ]; then
+if [ -n $OCTOPI_LPFRG_DEVEL ]; then
 	echo "--- Applying devel flavor"
 
 	echo "-- Horizontal display"
