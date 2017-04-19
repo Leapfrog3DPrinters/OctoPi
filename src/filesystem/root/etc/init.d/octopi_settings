@@ -56,9 +56,9 @@ do_start () {
       
       exit 0
     else
-      echo "Enabling boot profiling for next boot"
-      ln --symbolic /home/etc/readahead/profile-once /etc/readahead/profile-once
-      touch /etc/readahead/profile-once
+      #echo "Enabling boot profiling for next boot"
+      #ln --symbolic /home/etc/readahead/profile-once /etc/readahead/profile-once
+      #touch /etc/readahead/profile-once
       echo "Going to make root readonly" | tee /var/log/octopi_settings
       /usr/bin/root-readonly | tee /var/log/octopi_settings
       echo "Root made readonly, rebooting to apply..." | tee /var/log/octopi_settings

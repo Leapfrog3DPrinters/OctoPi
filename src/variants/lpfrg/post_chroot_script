@@ -177,8 +177,8 @@ if [ -f "/etc/fake-hwclock.data" ]; then
 fi
 ln --symbolic /home/etc/fake-hwclock.data /etc/fake-hwclock.data
 
-echo "--- Installing readahead"
-apt-get install --yes readahead
+#echo "--- Installing readahead"
+#apt-get install --yes readahead
 
 echo "--- Deleting ModemManager"
 apt-get purge --yes ModemManager
@@ -217,6 +217,9 @@ if [ "$BUILD_FLAVOR" == "devel" ]; then
 
 	echo "-- Keep root writable"
 	sed -i "s@root_readonly=\"yes\"@root_readonly=\"no\"@" /boot/octopi.txt
+
+	echo "-- Enabling SSH"
+	touch /boot/ssh
 
 	echo "-- Enable OctoPrint virtual printer"
 	sed -i "/- virtual_printer/d" /home/pi/.octoprint/config.yaml
