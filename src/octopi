@@ -121,7 +121,6 @@ pushd $OCTOPI_WORKSPACE
     if [ "$OCTOPI_IMAGE_RASPBIAN" == "yes" ]; then
       fixLd
     fi
-    #sed -i 's@include /etc/ld.so.conf.d/\*.conf@\#include /etc/ld.so.conf.d/\*.conf@' etc/ld.so.conf
 
     #Edit fstab to account for the new home partition
     if [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]

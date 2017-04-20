@@ -212,6 +212,9 @@ if [ -n $OCTOPI_LPFRG_DEVEL ]; then
 	echo "-- Horizontal display"
 	sed -i "s@display_rotate=1@display_rotate=0@" /boot/config.txt
 
+	echo "-- High-res"
+	sed -i "s@hdmi_cvt=1024 600@hdmi_cvt=1280 720@" /boot/config.txt
+
 	echo "-- Enable cursor"
 	sed -i "s@xserver-command=X -nocursor@#xserver-command=X -nocursor@" /etc/lightdm/lightdm.conf	
 
