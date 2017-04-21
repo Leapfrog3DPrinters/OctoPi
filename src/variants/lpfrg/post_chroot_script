@@ -221,6 +221,12 @@ if [ -n $OCTOPI_LPFRG_DEVEL ]; then
 	echo "-- Keep root writable"
 	sed -i "s@root_readonly=\"yes\"@root_readonly=\"no\"@" /boot/octopi.txt
 
+	echo "-- Verbose booting"
+	sed -i "s/tty6/tty1/" /boot/cmdline.txt
+	sed -i "s/loglevel=[0-9] //" /boot/cmdline.txt
+	sed -i "s/quiet //" /boot/cmdline.txt
+	sed -i "s/splash //" /boot/cmdline.txt
+
 	echo "-- Enabling SSH"
 	touch /boot/ssh
 

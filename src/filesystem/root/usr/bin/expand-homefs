@@ -93,8 +93,6 @@ EOF
    # Fix fstab to automount home
     sed -i "s|^\(/dev/$HOME_PART .*\)\(noauto\)\(.*\)|\1auto\3|" /etc/fstab
 
-  ASK_TO_REBOOT=1
-
   # now set up an init.d script
 cat <<EOF > /etc/init.d/homeresize2fs_once &&
 #!/bin/sh

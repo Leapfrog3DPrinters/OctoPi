@@ -44,7 +44,7 @@ fi
 [ -n "$OCTOPI_ROOT_PARTITION" ] || OCTOPI_ROOT_PARTITION=2
 
 # if set will enlarge root parition prior to build by provided size in MB
-[ -n "$OCTOPI_IMAGE_ENLARGEROOT" ] || OCTOPI_IMAGE_ENLARGEROOT=400
+[ -n "$OCTOPI_IMAGE_ENLARGEROOT" ] || OCTOPI_IMAGE_ENLARGEROOT=800
 
 # if set will create a seperate home partition with given size in MB
 [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ] || OCTOPI_IMAGE_HOMEPARTITION_SIZE=400
@@ -52,7 +52,7 @@ fi
 # if set will create 2 additional partitions: one to store backups of home and root partitions, and one that runs raspbian-lite to recover the backups
 [ -n "$OCTOPI_IMAGE_RECOVERY" ] || OCTOPI_IMAGE_RECOVERY=yes
 # Size of the recovery partition (that runs raspbian)
-[ -n "$OCTOPI_IMAGE_RECOVERYPARTITION_SIZE" ] || OCTOPI_IMAGE_RECOVERYPARTITION_SIZE=1500
+[ -n "$OCTOPI_IMAGE_RECOVERYPARTITION_SIZE" ] || OCTOPI_IMAGE_RECOVERYPARTITION_SIZE=1000
 # Size of the backup partition (must have space for gzips of root+home partitions)
 [ -n "$OCTOPI_IMAGE_BACKUPPARTITION_SIZE" ] || OCTOPI_IMAGE_BACKUPPARTITION_SIZE=1000
 # Path to the chroot script that is executed on the recovery partition

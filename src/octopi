@@ -122,6 +122,12 @@ pushd $OCTOPI_WORKSPACE
       fixLd
     fi
 
+    # As of April 2017, fstab uses UUIDs to identify the first two partitions.
+    # The first boot will however use parted->resizepart to recreate the partition table
+    # which changes the UUID. Therefore, we replace the UUIDs here by their device
+    # path representations. 
+    sed -i "s@PARTUUID=[a-zA-Z0-9]*-0\([0-9]\)@/dev/mmcblk0p\1@" etc/fstab
+
     #Edit fstab to account for the new home partition
     if [ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ]
     then
