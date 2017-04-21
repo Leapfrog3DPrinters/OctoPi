@@ -31,14 +31,13 @@ do_start () {
       exit 0
   elif [ "$perform_resize" = "home" ] && [ ! -f "$home_resized_file" ]
   then
-      # Resize home partition using custom tool
+      # Resize home partition using custom tool and mount it straight away
       /usr/bin/expand-homefs | tee /var/log/octopi_settings
       touch "$home_resized_file"
 
-      log_success_msg "Resize homefs prepared, rebooting to apply..."
+      log_success_msg "Home fs resized"
 
-      /sbin/reboot
-      exit 0
+      # No need to restart anymore
   else
       log_success_msg "No need to resize any partitions"
   fi

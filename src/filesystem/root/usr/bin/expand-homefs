@@ -76,54 +76,16 @@ EOF
     parted /dev/mmcblk0 -ms resizepart "$EXTENDED_PART_NUM" "${expandto}s" 
     parted /dev/mmcblk0 -ms resizepart "$PART_NUM" "${expandto}s" 
     parted /dev/mmcblk0 -s p
-
-#     parted /dev/mmcblk0 <<EOF
-# p
-# resizepart
-# $EXTENDED_PART_NUM
-# y
-# ${expandto}s
-# resizepart
-# $PART_NUM
-# ${expandto}s
-# q
-# EOF
   fi
 
+   #Resize
+   resize2fs /dev/$HOME_PART
+
    # Fix fstab to automount home
-    sed -i "s|^\(/dev/$HOME_PART .*\)\(noauto\)\(.*\)|\1auto\3|" /etc/fstab
+   sed -i "s|^\(/dev/$HOME_PART .*\)\(noauto\)\(.*\)|\1auto\3|" /etc/fstab
 
-  # now set up an init.d script
-cat <<EOF > /etc/init.d/homeresize2fs_once &&
-#!/bin/sh
-### BEGIN INIT INFO
-# Provides:          homeresize2fs_once
-# Required-Start:
-# Required-Stop:
-# Default-Start: 3
-# Default-Stop:
-# Short-Description: Resize the home filesystem to fill partition
-# Description:
-### END INIT INFO
-
-. /lib/lsb/init-functions
-
-case "\$1" in
-  start)
-    log_daemon_msg "Starting homeresize2fs_once" &&
-    resize2fs /dev/$HOME_PART &&
-    update-rc.d homeresize2fs_once remove &&
-    rm /etc/init.d/homeresize2fs_once &&
-    log_end_msg \$?
-    ;;
-  *)
-    echo "Usage: \$0 start" >&2
-    exit 3
-    ;;
-esac
-EOF
-  chmod +x /etc/init.d/homeresize2fs_once &&
-  update-rc.d homeresize2fs_once defaults
+   # Mount it
+   mount /dev/$HOME_PART
 }
 
 
