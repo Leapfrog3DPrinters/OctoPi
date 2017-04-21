@@ -129,7 +129,6 @@ update-rc.d tlsdated defaults
 
 echo "--- Installing syslog_copy"
 chmod +x /usr/bin/copy_syslog
-chmod +x /etc/systemd/system/copy_syslog.service
 systemctl enable copy_syslog
 
 echo "--- Installing (requirements for) LpfrgScreensaver"

@@ -256,7 +256,7 @@ else
   rm /boot/octopi-network.txt
 fi
 
-#unpack root in the end, so etc file are not overwritten, might need to add two roots int he future
+#unpack root in the end, so etc file are not overwritten, might need to add two roots in the future
 unpack /filesystem/root /
 chmod +x /usr/bin/expand-homefs
 chmod +x /usr/bin/root-readonly
@@ -267,11 +267,11 @@ chmod +x /usr/bin/root-readonly
 ### Disable GUI at start
 #systemctl_if_exists disable lightdm.service
 
-chmod +x /etc/init.d/octopi_settings
-update-rc.d octopi_settings defaults
+chmod +x /usr/bin/octopi-settings
+systemctl enable octopi_settings
 
 # Prevent lightdm from starting before octopi_settings has completed
-sed -i "/After=/s/$/ octopi_settings.service/" /lib/systemd/system/lightdm.service
+#sed -i "/After=/s/$/ octopi_settings.service/" /lib/systemd/system/lightdm.service
 
 ### OctoPrint
 

@@ -1,0 +1,10 @@
+[Unit]
+Description=OctoPi settings service
+After=home.mount
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/octopi-settings
+
+[Install]
+WantedBy=local-fs.target

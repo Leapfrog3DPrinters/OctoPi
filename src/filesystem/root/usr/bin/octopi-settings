@@ -1,0 +1,69 @@
+#!/bin/sh
+
+# octopi_settings script
+# Performs resizing of root and/or home partition on first boot.  
+# After that; makes root readonly if configured.
+# Author: Erik Heidstra <ErikHeidstra@live.nl>
+
+. /boot/octopi.txt
+
+root_resized_file=/.resized
+home_resized_file=/home/.resized
+resizing=0
+
+## Perform resizing, and exit script if any action is performed
+if [ "$perform_resize" = "root" ] && [ ! -f "$root_resized_file"  ]
+then
+    # Resize root using utility provided in raspbian
+    /usr/bin/raspi-config --expand-rootfs | tee /var/log/octopi_settings
+    touch "$root_resized_file"
+
+    echo "Resize rootfs prepared, rebooting to apply..."
+
+    /sbin/reboot
+    exit 0
+elif [ "$perform_resize" = "home" ] && [ ! -f "$home_resized_file" ]
+then
+    # Resize home partition using custom tool and mount it straight away
+    /usr/bin/expand-homefs | tee /var/log/octopi_settings
+    touch "$home_resized_file"
+
+    echo "Home fs resized"
+
+    # No need to restart anymore
+else
+    echo "No need to resize any partitions"
+fi
+
+
+# Make root partition readonly
+grep -q "boot=overlay" /boot/cmdline.txt 
+is_already_readonly=$?
+
+if [ "$root_readonly" = "yes" ]
+then
+  if [ "$is_already_readonly" = 0 ]; then
+    echo "Root already readonly, doing nothing..." | tee /var/log/octopi_settings
+
+    exit 0
+  else
+    #echo "Enabling boot profiling for next boot"
+    #ln --symbolic /home/etc/readahead/profile-once /etc/readahead/profile-once
+    #touch /etc/readahead/profile-once
+    echo "Going to make root readonly" | tee /var/log/octopi_settings
+    /usr/bin/root-readonly | tee /var/log/octopi_settings
+    echo "Root made readonly, rebooting to apply..." | tee /var/log/octopi_settings
+
+    /sbin/reboot
+    exit 0
+  fi
+elif [ "$is_already_readonly" = 0 ]; then
+    sed -i "s/boot=overlay//" /boot/cmdline.txt
+    echo "Root made writable" | tee /var/log/octopi_settings
+
+    /sbin/reboot
+    exit 0
+else
+    echo "Root readonly disabled" | tee /var/log/octopi_settings
+    exit 0
+fi
