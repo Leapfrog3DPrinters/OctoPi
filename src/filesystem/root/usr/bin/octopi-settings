@@ -28,7 +28,7 @@ then
     /usr/bin/expand-homefs | tee /var/log/octopi_settings
     touch "$home_resized_file"
 
-    echo "Home fs resized"
+    echo "Home fs resized and mounted"
 
     # No need to restart anymore
 else
