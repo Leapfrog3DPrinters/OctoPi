@@ -21,7 +21,7 @@ echo "--- Configuring desktop environment"
 sed -i "s|^#xserver-command\(.*\)|xserver-command=X -nocursor|" /etc/lightdm/lightdm.conf
 
 # Autologin user pi
-sed -i "s|^#autologin-user\(.*\)|autologin-user=pi|" /etc/lightdm/lightdm.conf
+sed -i "s|^#autologin-user=\(.*\)|autologin-user=pi|" /etc/lightdm/lightdm.conf
 
 
 echo "--- Setting up to boot to desktop"

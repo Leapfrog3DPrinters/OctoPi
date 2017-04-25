@@ -333,8 +333,8 @@ class OctoPrintComm():
 
         if self.machine_data and "_default" in self.machine_data:
             for _, item in self.machine_data["_default"].iteritems():
-                if "property" in item and "value" in item and item["property"] == "machine_type":
-                    return item["value"].lower()
+                if "property" in item and "value" in item and item["property"] == "machine_type" and item["value"]:
+                        return item["value"].lower()
         
         return DEFAULT_MODEL
 

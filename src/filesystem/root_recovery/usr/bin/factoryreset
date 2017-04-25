@@ -60,6 +60,13 @@ echo "Restoring boot partition" >> $logfile
 echo "boot" > $stepfile
 cp -rpf $mountdir/$bootbackup/. /boot/ >> $logfile
 
+# Prevent automount of home partition
+if [ "$resettype" != "full" ]; then
+	mkdir -p "/newroot"
+	mount "$rootpart" "/newroot" 
+	sed -i "s|^\($homepart .*\)\(auto\)\(.*\)|\1noauto\3|" /newroot/etc/fstab
+fi
+
 # Reset boot partition and reboot	
 echo "Resetting cmdline" >> $logfile
 sed -i "s@boot=overlay@@" /boot/cmdline.txt # Makes the root partition writable

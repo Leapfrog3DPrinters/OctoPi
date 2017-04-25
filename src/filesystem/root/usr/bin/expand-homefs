@@ -1,6 +1,5 @@
 #!/bin/bash
 # With a lot of thanks to https://github.com/RPi-Distro/raspi-config
-set -x
 
 progressimg="/usr/share/expand-homefs/lpfrg-expandhomefs-portrait.png"
 

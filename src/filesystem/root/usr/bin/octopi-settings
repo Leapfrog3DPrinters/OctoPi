@@ -24,13 +24,14 @@ then
     exit 0
 elif [ "$perform_resize" = "home" ] && [ ! -f "$home_resized_file" ]
 then
+
     # Resize home partition using custom tool and mount it straight away
     /usr/bin/expand-homefs | tee /var/log/octopi_settings
     touch "$home_resized_file"
 
     echo "Home fs resized and mounted"
 
-    # No need to restart anymore
+    # Reboot after
 else
     echo "No need to resize any partitions"
 fi
@@ -65,5 +66,7 @@ elif [ "$is_already_readonly" = 0 ]; then
     exit 0
 else
     echo "Root readonly disabled" | tee /var/log/octopi_settings
+
     exit 0
 fi
+

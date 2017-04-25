@@ -1,12 +1,13 @@
 [Unit]
 Description=OctoPi settings service
 DefaultDependencies=no
-Before=basic.target
+Before=paths.target
 After=local-fs.target
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=/usr/bin/octopi-settings
+RemainAfterExit=yes
 
 [Install]
-WantedBy=basic.target
+WantedBy=paths.target
