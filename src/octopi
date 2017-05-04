@@ -193,6 +193,9 @@ pushd $OCTOPI_WORKSPACE
     done
     
     pushd $OCTOPI_MOUNT_PATH
+      # Same fstab fix as on main partition (UUID > /dev/...)
+      sed -i "s@PARTUUID=[a-zA-Z0-9]*-0\([0-9]\)@/dev/mmcblk0p\1@" etc/fstab
+
       echo "--- Executing recovery partition chroot script"
       fixLd
       execute_chroot_script $OCTOPI_SCRIPT_PATH $OCTOPI_RECOVERY_CHROOT_SCRIPT_PATH

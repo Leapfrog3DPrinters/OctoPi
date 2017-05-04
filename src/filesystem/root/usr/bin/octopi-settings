@@ -24,7 +24,8 @@ then
     exit 0
 elif [ "$perform_resize" = "home" ] && [ ! -f "$home_resized_file" ]
 then
-
+    # We arrive here if there's no .resized, so also when home is not mounted yet!
+    
     # Resize home partition using custom tool and mount it straight away
     /usr/bin/expand-homefs | tee /var/log/octopi_settings
     touch "$home_resized_file"

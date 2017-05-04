@@ -77,8 +77,16 @@ EOF
     parted /dev/mmcblk0 -s p
   fi
 
-   #Resize
-   resize2fs /dev/$HOME_PART
+   #Re-read partition table
+   partprobe /dev/mmcblk0
+
+   # Check
+   e2fsck -fy /dev/$HOME_PART
+
+   #Resize (we can't rely on the system date here, so we need to skip the 
+   # check if e2fsck ran with -f. Related to 
+   # https://bugs.launchpad.net/ubuntu/+source/gparted/+bug/373409)
+   resize2fs -f /dev/$HOME_PART
 
    # Fix fstab to automount home
    sed -i "s|^\(/dev/$HOME_PART .*\)\(noauto\)\(.*\)|\1auto\3|" /etc/fstab
