@@ -8,6 +8,9 @@ install_chroot_fail_on_error_trap
 mkdir /home/pi/.config -p
 chown -hR pi:pi /home/pi/.config
 
+# Try to fix annoying locale warning on apt install
+locale-gen en_US en_US.UTF-8
+
 apt-get update
 
 echo "--- Installing desktop environment"

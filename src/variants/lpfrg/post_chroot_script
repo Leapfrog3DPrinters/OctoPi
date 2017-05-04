@@ -4,6 +4,10 @@
 source /common.sh
 install_chroot_fail_on_error_trap
 
+# Prevent services from starting after install (htpdate in this case)
+echo exit 101 > /usr/sbin/policy-rc.d
+chmod +x /usr/sbin/policy-rc.d
+
 echo "--- Installing NetworkManager"
 apt-get install --yes network-manager
 
@@ -123,6 +127,7 @@ sed -i "/After=/s/$/ lightdm.service/" /lib/systemd/system/plymouth-quit-wait.se
 sed -i "/ExecStart=/s/$/ --retain-splash/" /lib/systemd/system/plymouth-quit.service
 
 echo "--- Remove ntp and installing htpdate"
+
 apt-get purge --yes ntp
 apt-get install --yes htpdate
 
@@ -246,3 +251,6 @@ fi
 
 echo "--- Cleanup"
 apt-get autoremove --yes
+
+# Allow services to be started after install again
+rm -r /usr/sbin/policy-rc.d
