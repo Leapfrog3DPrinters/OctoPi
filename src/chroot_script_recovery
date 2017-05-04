@@ -21,10 +21,9 @@ echo "--- Installing ImageMagick"
 apt-get install --yes imagemagick
 
 echo "--- Installing factoryreset"
-chmod +x /etc/init.d/factoryreset
 chmod +x /usr/bin/factoryreset
 chmod +x /usr/bin/factoryresetmonitor
-update-rc.d factoryreset defaults
+systemctl enable factoryreset
 
 echo "--- Update pi password"
 if [ -n $OCTOPI_PI_PASSWORD ]

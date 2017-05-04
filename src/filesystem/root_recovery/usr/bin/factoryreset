@@ -43,6 +43,9 @@ if [ "$resettype" != "full" ] && [ "$resettype" != "fast" ]; then
 	exit 1
 fi
 
+# Start monitoring
+factoryresetmonitor&
+
 if [ "$resettype" = "full" ]; then
 	# Overwrite root partition with backup
 	echo "Restoring root partition" >> $logfile
