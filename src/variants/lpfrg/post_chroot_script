@@ -122,10 +122,12 @@ sed -i "/After=/s/$/ lightdm.service/" /lib/systemd/system/plymouth-quit-wait.se
 
 sed -i "/ExecStart=/s/$/ --retain-splash/" /lib/systemd/system/plymouth-quit.service
 
-echo "--- Installing tlsdate"
-apt-get install --yes tlsdate
-#TODO: Edit service tlsdated to include 'skip verification' argument
-update-rc.d tlsdated defaults
+echo "--- Remove ntp and installing htpdate"
+apt-get purge --yes ntp
+apt-get install --yes htpdate
+
+# Allow time jumps
+sed -i "s/HTP_OPTIONS=\(.*\)/HTP_OPTIONS=\"-D -s -t\"/" /etc/default/htpdate
 
 echo "--- Installing syslog_copy"
 chmod +x /usr/bin/copy_syslog
@@ -175,6 +177,9 @@ if [ -f "/etc/fake-hwclock.data" ]; then
 	mv /etc/fake-hwclock.data /home/etc/fake-hwclock.data
 fi
 ln --symbolic /home/etc/fake-hwclock.data /etc/fake-hwclock.data
+
+# Make sure we access the clock file after home has been mounted
+sed -i "/Before=\(.*\)/a After=home.mount" /lib/systemd/system/fake-hwclock.service
 
 #echo "--- Installing readahead"
 #apt-get install --yes readahead-fedora

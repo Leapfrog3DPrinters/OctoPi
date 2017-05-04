@@ -30,7 +30,4 @@ dmesg --console-off
 export DISPLAY=:0
 export XAUTHORITY=/home/pi/.Xauthority
 
-# Start tlsdated daemon (doesn't work from init script)
-tlsdated -f /etc/tlsdate/tlsdated.conf -- -t -l&
-
 exit 0
