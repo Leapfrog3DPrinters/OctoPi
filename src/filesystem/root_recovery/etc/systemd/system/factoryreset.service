@@ -1,0 +1,12 @@
+[Unit]
+Description=Lpfrg factory reset service
+DefaultDependencies=yes
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/factoryreset
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
