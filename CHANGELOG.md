@@ -12,6 +12,7 @@ Changelog for OctoPi for Lpfrg
 - New "devel" flavor to preconfigure virtual printer, disable root readonly, and landscape display orientation
 - Several LSB scripts are now migrated to systemd
 - Less reboots on inital startup
+- Enabled SPI
 
 ## 1.1.0 
 
