@@ -215,7 +215,7 @@ fi
 # # Remove the source file
 # rm /boot/overlays/gpio-lpfrg.dts
 
-if [ -n $OCTOPI_LPFRG_DEVEL ]; then
+if [ -n "$OCTOPI_LPFRG_DEVEL" ]; then
 	echo "--- Applying devel flavor"
 
 	echo "-- Horizontal display"

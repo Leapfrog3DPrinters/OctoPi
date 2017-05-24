@@ -83,6 +83,12 @@ To build a variant use::
 
     sudo bash -x ./build [Variant]
     
+Configuration Lpfrg Variant
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Place a textfile with the preferred default Pi password in variants/lpfrg/LPFRGPASSWD
+2. Place the cloud configuration yaml in variants/lpfrg/filesystem/home/pi/.octoprint/data/lui/cloud.yaml
+    
 Building Using Vagrant
 ~~~~~~~~~~~~~~~~~~~~~~
 There is a vagrant machine configuration to let build OctoPi in case your build environment behaves differently. Unless you do extra configuration, vagrant must run as root to have nfs folder sync working.
