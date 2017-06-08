@@ -10,7 +10,7 @@ homebackup="home.img.gz"
 
 # Layout
 progressimg="/usr/share/factoryreset/lpfrg-factoryreset-portrait.png"
-outputimg="/usr/share/factoryreset/progress.png"
+outputimg="/usr/share/factoryreset/progress"
 fontfile="/usr/share/factoryreset/AdventPro-Bold.ttf"
 fontcolor="#95C200"
 fontsize=55
@@ -24,7 +24,7 @@ resettypefile="/boot/factoryreset.txt"
 resettype=$(< $resettypefile)
 
 # Monitoring interval in seconds
-interval=2
+interval=3
 
 # Wait for the directory to be mounted and read the uncompressed size of the backupimages
 while [ -z "$rootsize" ]; do
@@ -44,10 +44,16 @@ fi
 
 # Using this little trick we can auto-refresh one image in FBI
 #https://raspberrypi.stackexchange.com/questions/24180/how-can-i-refresh-image-displayed-by-fbi-without-black-screen-transition
-ln -f --symbolic "$outputimg" "$outputimg-sym" "$outputimg-sym1" "$outputimg-sym2"
+i="a"
+cp -f "$progressimg" "$outputimg$i.png"
+ln -f --symbolic "$outputimg$i.png" "$outputimg-sym0.png" 
+ln -f --symbolic "$outputimg$i.png" "$outputimg-sym1.png" 
+ln -f --symbolic "$outputimg$i.png" "$outputimg-sym2.png"
 
-# Display on tty7 and refresh every sec
-fbi -noverbose --autodown -d /dev/fb0 -T 7 -cachemem 0 -t 1 "$outputimg" "$outputimg-sym1" "$outputimg-sym2"&
+# Display on tty7 and refresh every 3 sec
+# Don't read the output img itself (due to race condition)
+fbi -noverbose --autodown -d /dev/fb0 -T 7 --noreadahead --cachemem 0 -t $interval "$outputimg-sym0.png" "$outputimg-sym1.png" "$outputimg-sym2.png"&
+fbipid=$!
 
 # Begin the monitoring loop
 while true; do
@@ -84,13 +90,25 @@ while true; do
       fi
     fi
 
+    # Toggle $i between a/b (double buffering!)
+    if [ "$i" == "a" ]; then
+      i="b"
+    elif [ "$i" == "b" ]; then
+      i="a"
+    fi
+
     # Make an overlay with the progress string and save it to disk
     convert "$progressimg" -fill "$fontcolor" -font "$fontfile" -pointsize "$fontsize" -gravity Center \
     -draw "text 0,400 '${progressstr}'" \
-    "$outputimg"
+    "$outputimg$i.png"
+
+    # Update the symlinks
+    ln -f --symbolic "$outputimg$i.png" "$outputimg-sym0.png" 
+    ln -f --symbolic "$outputimg$i.png" "$outputimg-sym1.png" 
+    ln -f --symbolic "$outputimg$i.png" "$outputimg-sym2.png"
 
     if [ "$step" == "boot" ]; then
-        exit 0
+      exit 0
     else
       sleep $interval
     fi
