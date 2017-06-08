@@ -11,7 +11,9 @@ homebackup="home.img.gz"
 # Layout
 progressimg="/usr/share/factoryreset/lpfrg-factoryreset-portrait.png"
 outputimg="/usr/share/factoryreset/progress.png"
-fontfile="/usr/share/factoryreset/futura.ttf"
+fontfile="/usr/share/factoryreset/AdventPro-Bold.ttf"
+fontcolor="#95C200"
+fontsize=55
 
 # Files indicating the status of the factory reset procedure
 statusfile="/var/run/factoryresetstatus"
@@ -22,7 +24,7 @@ resettypefile="/boot/factoryreset.txt"
 resettype=$(< $resettypefile)
 
 # Monitoring interval in seconds
-interval=5
+interval=2
 
 # Wait for the directory to be mounted and read the uncompressed size of the backupimages
 while [ -z "$rootsize" ]; do
@@ -39,6 +41,13 @@ else
   echo "Resettype not recognized, must be fast or full. Found: $resettype"
   exit 1
 fi
+
+# Using this little trick we can auto-refresh one image in FBI
+#https://raspberrypi.stackexchange.com/questions/24180/how-can-i-refresh-image-displayed-by-fbi-without-black-screen-transition
+ln -f --symbolic "$outputimg" "$outputimg-sym" "$outputimg-sym1" "$outputimg-sym2"
+
+# Display on tty7 and refresh every sec
+fbi -noverbose --autodown -d /dev/fb0 -T 7 -cachemem 0 -t 1 "$outputimg" "$outputimg-sym1" "$outputimg-sym2"&
 
 # Begin the monitoring loop
 while true; do
@@ -71,17 +80,19 @@ while true; do
       progressstr="${progress}%"
     else
       if [ "$step" == "boot" ]; then
-        progressstr="ALMOST READY"
+        progressstr="Rebooting..."
       fi
     fi
 
     # Make an overlay with the progress string and save it to disk
-    convert "$progressimg" -fill white -font "$fontfile" -pointsize 50 -gravity Center \
+    convert "$progressimg" -fill "$fontcolor" -font "$fontfile" -pointsize "$fontsize" -gravity Center \
     -draw "text 0,400 '${progressstr}'" \
     "$outputimg"
 
-    # Write the progress to the framebuffer (and display on tty7)
-    fbi -noverbose --autodown -d /dev/fb0 -T 7 "$outputimg"&
-
-    sleep $interval
+    if [ "$step" == "boot" ]; then
+        exit 0
+    else
+      sleep $interval
+    fi
+    
 done 
