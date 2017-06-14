@@ -37,6 +37,11 @@ mkdir -p /media/pi
 chown -R pi:pi /media/pi 
 sed -i "s|^allowed_media_dirs\(.*\)|allowed_media_dirs = /media/\$USER|" /etc/udevil/udevil.conf
 
+# Flush writes to inserted media directly. Better UX (sometimes files were missing when user removed
+# media to quickly)
+sed -i -E "s/default_options_((vfat|exfat)[ ]*)\=/default_options_\1= flush,/" /etc/udevil/udevil.conf
+
+
 echo "--- Installing chromium"
 apt-get install --yes chromium-browser
 

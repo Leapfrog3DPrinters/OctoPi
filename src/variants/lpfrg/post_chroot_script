@@ -171,8 +171,9 @@ ln --symbolic /home/etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/N
 ln --symbolic /home/etc/NetworkManager/system-connections /etc/NetworkManager/system-connections
 
 # DHCP optimization (for boot speedup)
-grep -q "noarp" /etc/dhcpcd.conf || echo "noarp" >> /etc/dhcpcd.conf
-rm /etc/systemd/system/dhcpcd.service.d/wait.conf
+# As of v1.2, June 2017, we no longer use dhcpcd
+# grep -q "noarp" /etc/dhcpcd.conf || echo "noarp" >> /etc/dhcpcd.conf
+# rm /etc/systemd/system/dhcpcd.service.d/wait.conf
 
 echo "--- Move clock file"
 
@@ -191,6 +192,9 @@ sed -i "/Before=\(.*\)/a After=home.mount" /lib/systemd/system/fake-hwclock.serv
 
 echo "--- Deleting ModemManager"
 apt-get purge --yes ModemManager
+
+echo "--- Deleting dhcpcd"
+apt-get purge --yes dhcpcd5
 
 echo "--- Enabling some GPIO pins on boot"
 # As rootreadonly will do the initramfs update, it is not done here

@@ -20,7 +20,7 @@ else
 fi
 
 # Prevent useless swapfile on readonly root partition
-OCTOPI_SWAPFILE_ENABLE=yes
+OCTOPI_SWAPFILE_ENABLE=no
 OCTOPI_SWAPFILE_LOCATION=/home/swap
 
 # Custom config
