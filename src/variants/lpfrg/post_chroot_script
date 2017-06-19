@@ -92,6 +92,16 @@ pushd /home/pi
 			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 		popd
 	fi
+
+	if [ "$OCTOPI_INCLUDE_OCTOPRINT_RGBSTATUS" == "yes" ]
+ 	then
+		echo "--- Installing OctoPrint-rgbStatus"
+
+		gitclone OCTOPI_OCTOPRINT_RGBSTATUS_REPO OctoPrint-rgbStatus
+		pushd OctoPrint-rgbStatus
+			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
+		popd
+	fi
 popd
 
 echo "--- Installing aasoftpoweroff"

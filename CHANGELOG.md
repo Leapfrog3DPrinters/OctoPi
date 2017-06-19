@@ -14,7 +14,10 @@ Changelog for OctoPi for Lpfrg
 - Several LSB scripts are now migrated to systemd
 - Less reboots on initial startup
 - Enabled SPI
+- Includes OctoPrint-rgbStatus
 - No more pink line on WaveShare displays
+- NetworkManager state on home partition to maintain state on reboot
+- Updated Leapfrog branding
 
 ## 1.1.0 
 
