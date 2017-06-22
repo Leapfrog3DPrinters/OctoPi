@@ -1,7 +1,12 @@
+# Set the wallpaper
 feh --bg-max /home/pi/lpfrg-portrait.png &
+# Run Chromium
 chromium-browser http://localhost/ --kiosk --incognito --disable-pinch --touch-events --no-first-run --overscroll-history-navigation=0 --disable-translate &
+# Monitor the powerbutton for a factory reset
 /home/pi/scripts/factoryreset.py &
+# Keyboard and mouse settings
 sh -c 'xset m 20/10 10 r rate 500 30 b on' &
+# Rotate the touch screen input
 dorotatetouch &
 # Wait for NTP to settle before starting xscreensaver (the time jump may launch it immediately otherwise)
 (sleep 30; xscreensaver -nosplash) &

@@ -1,0 +1,10 @@
+[Unit]
+Description=Lpfrg configure screen service
+After=paths.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/configure_screen
+
+[Install]
+WantedBy=graphical.target

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+screen_configured_file=/home/.screensized
+
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
+if [ ! -f "$screen_configured_file" ]; then
+
+    chromium_preferences="/home/pi/.config/chromium/Default/Preferences"
+
+    # For some reason, the chrome preferences Json takes this
+    # value as 125 % zoom
+    zoom125="1.2239010857415449"
+    zoom100="0.0"
+
+    # Find the properties that set global and host-specific (localhost) zoom levels
+    # These are the only properties defines as:  { "123456789": 1.2239010857415449 }
+    match_zoom="\"\([0-9][0-9.]*\|localhost\)\"[ ]*\:[ ]*\([0-9][0-9.]*\)"
+
+    # Search for the PID of the touch screen of the low-res screen
+    # TODO: Find a better way to actually identify the native screen resolution
+    if lsusb | grep -q "03eb:214e"; then
+
+        # Set the RPi screen resolution from boot
+        echo "Setting screen resolution to 800x480"
+        sed -i "s/^hdmi_cvt=\(.*\)/hdmi_cvt=800 480 60 6 0 0 0/" "/boot/config.txt"
+
+        # Set the chromium zoom factor to 100%
+        echo "Setting Chromium zoom level to 100%"
+        sed -i "s/$match_zoom/\"\1\"\:$zoom100/g" "$chromium_preferences"
+        
+    else
+        # Set the RPi screen resolution from boot
+        echo "Setting screen resolution to 1024x600"
+        sed -i "s/^hdmi_cvt=\(.*\)/hdmi_cvt=1024 600 60 6 0 0 0/" "/boot/config.txt"
+
+        # Set the chromium zoom factor to 125%
+        echo "Setting Chromium zoom level to 125%"
+        sed -i "s/$match_zoom/\"\1\"\:$zoom125/g" "$chromium_preferences"
+    fi
+    echo "Rebooting..."
+    touch "$screen_configured_file"
+    reboot
+fi

@@ -144,9 +144,13 @@ apt-get install --yes htpdate
 # Allow time jumps
 sed -i "s/HTP_OPTIONS=\(.*\)/HTP_OPTIONS=\"-D -s -t\"/" /etc/default/htpdate
 
-echo "--- Installing syslog_copy"
+echo "--- Installing copy_syslog"
 chmod +x /usr/bin/copy_syslog
 systemctl enable copy_syslog
+
+echo "--- Installing configure_screen"
+chmod +x /usr/bin/configure_screen
+systemctl enable configure_screen
 
 echo "--- Installing (requirements for) LpfrgScreensaver"
 apt-get install --yes python-gtk2 python-yaml python-pip
