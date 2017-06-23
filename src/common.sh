@@ -167,14 +167,16 @@ function mount_image() {
   boot_partition=1
   fdisk_output=$(sfdisk -d $image_path)
   boot_offset=$(($(echo "$fdisk_output" | grep "$image_path$boot_partition" | awk '{print $4-0}') * 512))
+  boot_size=$(($(echo "$fdisk_output" | grep "$image_path$boot_partition" | awk '{print $6-0}') * 512))
   root_offset=$(($(echo "$fdisk_output" | grep "$image_path$root_partition" | awk '{print $4-0}') * 512))
+  root_size=$(($(echo "$fdisk_output" | grep "$image_path$root_partition" | awk '{print $6-0}') * 512))
 
   echo "Mounting image $image_path on $mount_path, offset for boot partition is $boot_offset, offset for root partition is $root_offset"
 
   # mount root and boot partition
-  sudo mount -o loop,offset=$root_offset $image_path $mount_path/
+  sudo mount -o loop,offset=$root_offset,sizelimit=$root_size $image_path $mount_path/
   if [[ "$boot_partition" != "$root_partition" ]]; then
-    sudo mount -o loop,offset=$boot_offset $image_path $mount_path/boot
+    sudo mount -o loop,offset=$boot_offset,sizelimit=$boot_size $image_path $mount_path/boot
   fi
   sudo mkdir -p $mount_path/dev/pts
   sudo mount -o bind /dev $mount_path/dev
@@ -183,8 +185,9 @@ function mount_image() {
   if [ -n "$home_partition" ]
   then    
     home_offset=$(($(echo "$fdisk_output" | grep "$image_path$home_partition" | awk '{print $4-0}') * 512))
+    home_size=$(($(echo "$fdisk_output" | grep "$image_path$home_partition" | awk '{print $6-0}') * 512))
     echo "Mounting home partition at offset $home_offset"
-    sudo mount -o loop,offset=$home_offset $image_path $mount_path/home
+    sudo mount -o loop,offset=$home_offset,sizelimit=$home_size $image_path $mount_path/home
   fi
 }
 
