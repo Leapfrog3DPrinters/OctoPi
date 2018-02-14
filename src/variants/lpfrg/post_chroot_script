@@ -66,6 +66,7 @@ pushd /home/pi
 
 		gitclone OCTOPI_OCTOPRINT_FLASHARDUINO_REPO OctoPrint-flashArduino
 		pushd OctoPrint-flashArduino
+      apt-get --yes install libglfw3-dev libgles2-mesa-dev
 			PIP_DEFAULT_TIMEOUT=60 sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/python setup.py install
 		popd
 
@@ -209,7 +210,7 @@ sed -i "/Before=\(.*\)/a After=home.mount" /lib/systemd/system/fake-hwclock.serv
 #apt-get install --yes readahead-fedora
 
 echo "--- Deleting ModemManager"
-apt-get purge --yes ModemManager
+#apt-get purge --yes ModemManager
 
 echo "--- Deleting dhcpcd"
 apt-get purge --yes dhcpcd5

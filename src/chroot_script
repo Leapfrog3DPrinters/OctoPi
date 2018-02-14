@@ -62,8 +62,9 @@ libts=""
 if [ $( is_in_apt libts-bin ) -eq 1 ]; then
   libts=libts-bin
 fi
-
-apt-get -y --force-yes install python2.7 python-virtualenv python-dev git screen subversion cmake checkinstall avahi-daemon libavahi-compat-libdnssd1 libffi-dev libssl-dev fbi $libts
+apt-get update
+apt-get upgrade --yes
+apt-get -y --allow-downgrades --allow-remove-essential install python2.7 python-virtualenv python-dev git screen subversion cmake checkinstall avahi-daemon libavahi-compat-libdnssd1 libffi-dev libssl-dev fbi $libts
 
 echo " - Reinstall iputils-ping"
 apt-get install --reinstall iputils-ping
@@ -75,10 +76,12 @@ pushd /home/pi
     echo "--- Cloning OctoPrint"
     gitclone OCTOPI_OCTOPRINT_REPO OctoPrint
   fi
+  echo "--Cloned Octoprint"
 
   #build virtualenv
   sudo -u pi virtualenv $OCTOPI_OCTOPRINT_VENV_PATH
   
+  echo "Installing PIP"
   # first lets upgrade pip (the shipped version is way too old...)
   sudo -u pi /home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/bin/pip install --upgrade "pip>=8,<9"
 
@@ -86,9 +89,10 @@ pushd /home/pi
   # since that stuff takes ages to compile during build, we do a somewhat dirty
   # trick here by installing the raspbian versions, copying the libs over
   # to our virtualenv and then purging the raspbian versions again
-  apt-get -y --force-yes install python-openssl
+  echo "install openssl"
+  apt-get -y --allow-downgrades --allow-remove-essential  install python-openssl python-cffi
   if [ $( is_in_apt python-cryptography ) -eq 1 ]; then
-    apt-get -y --force-yes install python-cryptography
+    apt-get -y --allow-downgrades --allow-remove-essential  install python-cryptography
     from=/usr/lib/python2.7/dist-packages
     to=/home/pi/$OCTOPI_OCTOPRINT_VENV_PATH/lib/python2.7/site-packages
     for pattern in "cffi*" "cryptography*" "OpenSSL*" "ply*" "pycparser*" "pyOpenSSL*" "six*"
@@ -145,12 +149,12 @@ pushd /home/pi
   then
     echo "--- Installing mjpg-streamer"
     if [ $( is_in_apt libjpeg62-turbo-dev ) -eq 1 ]; then
-      apt-get -y --force-yes install libjpeg62-turbo-dev
+      apt-get -y --allow-downgrades --allow-remove-essential  install libjpeg62-turbo-dev
     elif [ $( is_in_apt libjpeg8-dev ) -eq 1 ]; then 
-      apt-get -y --force-yes install libjpeg8-dev
+      apt-get -y --allow-downgrades --allow-remove-essential  install libjpeg8-dev
     fi
     
-    apt-get -y --force-yes --no-install-recommends install imagemagick libav-tools libv4l-dev
+    apt-get -y --allow-downgrades --allow-remove-essential  --no-install-recommends install imagemagick libav-tools libv4l-dev
     gitclone OCTOPI_MJPGSTREAMER_REPO mjpg-streamer
     pushd mjpg-streamer
       mv mjpg-streamer-experimental/* .
@@ -178,7 +182,7 @@ pushd /home/pi
   if [ "$OCTOPI_INCLUDE_HAPROXY" == "yes" ]
   then
     echo "--- Installing haproxy"
-    apt-get -y --force-yes install ssl-cert haproxy
+    apt-get -y --allow-downgrades --allow-remove-essential  install ssl-cert haproxy
     rm /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/certs/ssl-cert-snakeoil.pem
   fi
 

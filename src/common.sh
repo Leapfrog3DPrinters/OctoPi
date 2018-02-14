@@ -112,8 +112,10 @@ function gitclone(){
     clone_params="$clone_params --depth $depth"
   fi
 
-  sudo -u pi git clone $clone_params "$build_repo" "$repo_dir"
+  echo "cloning now"
+  sudo -u pi git clone --verbose $clone_params "$build_repo" "$repo_dir"
 
+  echo "like really"
   if [ "$build_repo" != "$ship_repo" ]
   then
     pushd "$repo_dir"
