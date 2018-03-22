@@ -27,7 +27,7 @@ function execute_chroot_script() {
 
 mkdir -p $OCTOPI_WORKSPACE
 mkdir -p $OCTOPI_MOUNT_PATH
-
+copy_install_folders
 install_cleanup_trap
 install_fail_on_error_trap $OCTOPI_MOUNT_PATH
 unmount_image $OCTOPI_MOUNT_PATH force || true
@@ -107,6 +107,9 @@ pushd $OCTOPI_WORKSPACE
     # mount root and boot partition
     mount_image $OCTOPI_IMG_PATH $OCTOPI_ROOT_PARTITION $OCTOPI_MOUNT_PATH   
   fi
+  mkdir $OCTOPI_MOUNT_PATH/home/pi/
+  #mkdir $OCTOPI_MOUNT_PATH/home/pi/OctoPi_Installs/
+  cp -rf $OCTOPI_INSTALL_FOLDER $OCTOPI_MOUNT_PATH/home/pi #/OctoPi_Installs
 
   if [ -n "$OCTOPI_APT_CACHE" ]
   then

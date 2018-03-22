@@ -1,0 +1,21 @@
+#!/bin/bash
+
+configfile=/home/pi/scripts/config.cfg
+if [ -f $configfile ]; then
+  source $configfile
+fi
+
+if ! [[ $(lsusb | grep -i 'Mouse'| tr "A-Z" "a-z") = *mouse* ]]; then
+  sudo logger "Mouse doesnt exist"
+	if grep -q "#xserver-command=X -nocursor" /etc/lightdm/lightdm.conf; then
+    sudo logger "Mouse removed"
+    if [[ $MouseIn = yes ]]; then
+      sudo logger "Mouse found in config"
+      grep -q '^MouseIn' $configfile && sed -i 's/^MouseIn.*/MouseIn=no/' $configfile || echo 'MouseIn=no' >> $configfile
+		  /home/pi/scripts/disable_cursor &
+      sudo logger "Mouse removed"
+    fi
+	fi
+fi
+
+

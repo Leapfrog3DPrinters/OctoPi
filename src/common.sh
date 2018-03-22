@@ -111,17 +111,19 @@ function gitclone(){
   then
     clone_params="$clone_params --depth $depth"
   fi
-
+  sudo cp -rf /home/pi/OctoPi-Installs/$repo_dir $repo_dir
+  sudo chown -Rf pi $repo_dir
+  sudo chmod -Rf 777 $repo_dir 
   echo "cloning now"
-  sudo -u pi git clone --verbose $clone_params "$build_repo" "$repo_dir"
+  #sudo -u pi git clone --verbose $clone_params "$build_repo" "$repo_dir"
 
-  echo "like really"
-  if [ "$build_repo" != "$ship_repo" ]
-  then
-    pushd "$repo_dir"
-      sudo -u pi git remote set-url origin "$ship_repo"
-    popd
-  fi
+  #echo "like really"
+  #if [ "$build_repo" != "$ship_repo" ]
+  #then
+  #  pushd "$repo_dir"
+  #    sudo -u pi git remote set-url origin "$ship_repo"
+  #  popd
+  #fi
 }
 
 function unpack() {
@@ -192,6 +194,19 @@ function mount_image() {
     sudo mount -o loop,offset=$home_offset,sizelimit=$home_size $image_path $mount_path/home
   fi
 }
+
+function copy_install_folders() {
+  mkdir $OCTOPI_INSTALL_FOLDER
+  pushd $OCTOPI_INSTALL_FOLDER
+    git clone https://github.com/Leapfrog3DPrinters/OctoPrint-LUI.git
+    git clone https://github.com/Leapfrog3DPrinters/OctoPrint.git
+    git clone https://github.com/Leapfrog3DPrinters/OctoPrint-flashArduino.git
+    git clone https://github.com/Leapfrog3DPrinters/OctoPrint-gcodeRender.git
+    git clone https://github.com/Leapfrog3DPrinters/OctoPrint-NetworkManager.git
+    git clone https://github.com/Leapfrog3DPrinters/OctoPrint-rgbStatus.git
+    git clone https://github.com/jacksonliam/mjpg-streamer.git
+  popd
+} 
 
 function mount_partition() {
   image_path=$1

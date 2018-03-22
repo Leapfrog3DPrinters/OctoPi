@@ -27,6 +27,8 @@ if [ ! -f "$screen_configured_file" ]; then
         # Set the RPi screen resolution from boot
         echo "Setting screen resolution to 800x480"
         sed -i "s/^hdmi_cvt=\(.*\)/hdmi_cvt=800 480 60 6 0 0 0/" "/boot/config.txt"
+        sed -i '/display_rotate=3/c\display_rotate=3' /boot/config.txt
+        sed -i '/rot_mat="0 1 0 -1 0 1"/c\rot_mat="0 -1 1 1 0 0"' /usr/bin/dorotatetouch
 
         # Set the chromium zoom factor to 100%
         echo "Setting Chromium zoom level to 100%"

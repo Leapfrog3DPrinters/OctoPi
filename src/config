@@ -47,7 +47,7 @@ fi
 [ -n "$OCTOPI_IMAGE_ENLARGEROOT" ] || OCTOPI_IMAGE_ENLARGEROOT=800
 
 # if set will create a seperate home partition with given size in MB
-[ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ] || OCTOPI_IMAGE_HOMEPARTITION_SIZE=400
+[ -n "$OCTOPI_IMAGE_HOMEPARTITION_SIZE" ] || OCTOPI_IMAGE_HOMEPARTITION_SIZE=600
 
 # if set will create 2 additional partitions: one to store backups of home and root partitions, and one that runs raspbian-lite to recover the backups
 [ -n "$OCTOPI_IMAGE_RECOVERY" ] || OCTOPI_IMAGE_RECOVERY=yes

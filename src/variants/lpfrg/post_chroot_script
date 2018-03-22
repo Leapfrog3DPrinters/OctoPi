@@ -224,8 +224,8 @@ rm /etc/console-setup/cached_*
 setupcon --save # Boosts boot performance
 
 echo "--- Removing NOOBS trace"
-update-rc.d apply_noobs_os_config remove
-rm /etc/init.d/apply_noobs_os_config
+#update-rc.d apply_noobs_os_config remove
+#rm /etc/init.d/apply_noobs_os_config
 
 echo "--- Removing resize2fs_once"
 if [ -f "/etc/init.d/resize2fs_once" ]; then
@@ -248,7 +248,7 @@ if [ -n "$OCTOPI_LPFRG_DEVEL" ]; then
 	sed -i "s@hdmi_cvt=1024 600@hdmi_cvt=1280 720@" /boot/config.txt
 
 	echo "-- Enable cursor"
-	sed -i "s@xserver-command=X -nocursor@#xserver-command=X -nocursor@" /etc/lightdm/lightdm.conf	
+	sed -i "s@xserver-command=X -nocursor@#xserver-command=X -nocursor@" /etc/lightdm/lightdm.conf
 
 	echo "-- Keep root writable"
 	sed -i "s@root_readonly=\"yes\"@root_readonly=\"no\"@" /boot/octopi.txt

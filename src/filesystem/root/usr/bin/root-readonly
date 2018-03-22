@@ -16,7 +16,7 @@ echo "--- Preparing overlay"
 cp -f "$overlayfile" /usr/share/initramfs-tools/scripts/overlay
 
 pushd /usr/share/initramfs-tools
-	grep -q "overlay" hook-functions || sed -i "539s@ext4dev@ext4dev ehci-pci ehci-orion ehci-hcd ohci-hcd ohci-pci uhci-hcd usbhid overlay@g" hook-functions
+	grep -q "overlay" hook-functions || sed -i "497s@btrfs ext2 ext3 ext4 ext4dev@btrfs ext2 ext3 ext4 ext4dev ehci-pci ehci-orion ehci-hcd ohci-hcd ohci-pci uhci-hcd usbhid overlay@g" hook-functions
 	pushd scripts
 		cp -rpf local-premount overlay-premount
 		cp -rpf local-bottom overlay-bottom
@@ -37,5 +37,6 @@ pushd /boot
 	grep -q "kernel=kernel7.img" config.txt || echo "kernel=kernel7.img" >> config.txt
 	grep -q "initramfs initrd.img-$kernelv" config.txt || echo "initramfs initrd.img-$kernelv" >> config.txt
 popd
+udevadm --reload-rules
 
 echo "--- Done. Be sure to reboot!"
